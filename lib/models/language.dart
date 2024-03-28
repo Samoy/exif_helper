@@ -1,26 +1,47 @@
 import 'package:flutter/material.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
-class LanguageProvider extends ChangeNotifier {
+class Language extends ChangeNotifier {
+  LanguageItem? _languageItem = LanguageItem.auto;
 
-  LanguageProvider({
-    required this.languageItems,
-  });
+  get current => _languageItem;
 
-  final List<LanguageItem> languageItems;
+  void initLanguage() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    if (prefs.containsKey('language')) {
+      String language = prefs.getString('language')!;
+      LanguageItem languageItem = LanguageItem.values.firstWhere(
+        (element) => element.name == language,
+        orElse: () => LanguageItem.auto,
+      );
+      setLanguage(languageItem);
+    }
+  }
 
-  LanguageItem? _languageItem;
-
-  get currentLanguageItem => _languageItem;
-
-  void setLocale(int index) {
-    if (_languageItem == languageItems[index]) return;
-    _languageItem = languageItems[index];
+  void setLanguage(LanguageItem? item) async {
+    if (_languageItem == item) return;
+    _languageItem = item;
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    await prefs.setString('language', item!.name);
     notifyListeners();
   }
 }
 
-class LanguageItem {
-  LanguageItem({required this.name, required this.locale});
+enum LanguageItem {
+  auto(
+    "Auto",
+    Locale('auto', 'Auto'),
+  ),
+  english(
+    "English",
+    Locale('en', 'US'),
+  ),
+  chinese(
+    "简体中文",
+    Locale('zh', 'CN'),
+  );
+
+  const LanguageItem(this.name, this.locale);
 
   final String name;
   final Locale locale;
