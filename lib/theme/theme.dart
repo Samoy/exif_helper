@@ -73,6 +73,7 @@ final lightTheme = ThemeData(
   colorScheme: lightColorScheme,
 );
 
-final darkTheme = lightTheme.copyWith(
+final darkTheme = ThemeData(
   colorScheme: darkColorScheme,
+  useMaterial3: true
 );

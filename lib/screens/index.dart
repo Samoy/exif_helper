@@ -33,28 +33,31 @@ class _IndexPageState extends State<IndexPage> with WindowListener {
     }
   }
 
-  void _initDestinations() {
+  void _buildDestinations() {
     _destinations = [
       _ScaffoldDestination(
-        icon: const Icon(Icons.history_outlined),
+        icon: Icons.history_outlined,
         label: AppLocalizations.of(context)!.recent,
         page: const HomePage(),
-        selectedIcon: const Icon(Icons.history),
+        selectedIcon: Icons.history,
       ),
       _ScaffoldDestination(
-        icon: const Icon(Icons.settings_outlined),
+        icon: Icons.settings_outlined,
         label: AppLocalizations.of(context)!.settings,
         page: const SettingsPage(),
-        selectedIcon: const Icon(Icons.settings),
+        selectedIcon: Icons.settings,
       )
     ];
   }
 
   @override
+  void didChangeDependencies() {
+    _buildDestinations();
+    super.didChangeDependencies();
+  }
+
+  @override
   Widget build(BuildContext context) {
-    if (_destinations.isEmpty) {
-      _initDestinations();
-    }
     return OrientationBuilder(
         builder: (BuildContext context, Orientation orientation) {
       if (orientation == Orientation.landscape) {
@@ -72,7 +75,7 @@ class _IndexPageState extends State<IndexPage> with WindowListener {
           children: <Widget>[
             NavigationRail(
               selectedIndex: _selectedIndex,
-              groupAlignment: 0,
+              groupAlignment: -1,
               onDestinationSelected: (int index) {
                 setState(() {
                   _selectedIndex = index;
@@ -80,12 +83,14 @@ class _IndexPageState extends State<IndexPage> with WindowListener {
               },
               minWidth: 100,
               labelType: NavigationRailLabelType.all,
+              leading: Container(
+                height: 64,
+              ),
               destinations: _destinations
                   .map(
                     (item) => NavigationRailDestination(
-                      icon: item.icon,
+                      icon: _buildIcon(item),
                       label: Text(item.label),
-                      selectedIcon: item.selectedIcon,
                     ),
                   )
                   .toList(),
@@ -112,13 +117,31 @@ class _IndexPageState extends State<IndexPage> with WindowListener {
         selectedIndex: _selectedIndex,
         destinations: _destinations
             .map((item) => NavigationDestination(
-                  icon: item.icon,
+                  icon: _buildIcon(item),
                   label: item.label,
-                  selectedIcon: item.selectedIcon,
                 ))
             .toList(),
       ),
       body: _destinations[_selectedIndex].page,
+    );
+  }
+
+  Widget _buildIcon(_ScaffoldDestination destination) {
+    return AnimatedSwitcher(
+      duration: const Duration(milliseconds: 200),
+      transitionBuilder: (Widget child, Animation<double> animation) {
+        //执行缩放动画
+        return ScaleTransition(
+          scale: animation,
+          child: child,
+        );
+      },
+      child: Icon(
+        _selectedIndex == _destinations.indexOf(destination)
+            ? destination.selectedIcon
+            : destination.icon,
+        key: ValueKey<int>(_selectedIndex),
+      ),
     );
   }
 
@@ -169,7 +192,7 @@ class _ScaffoldDestination {
   });
 
   final String label;
-  final Icon icon;
-  final Icon selectedIcon;
+  final IconData icon;
+  final IconData selectedIcon;
   final Widget page;
 }

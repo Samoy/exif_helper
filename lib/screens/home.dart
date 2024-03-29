@@ -11,26 +11,26 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> with WindowListener {
-
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
         title: Text(AppLocalizations.of(context)!.appTitle),
       ),
-      body: Center(
+      body: Container(
+        child: Center(
           child: OutlinedButton(
-        onPressed: () {
-          Navigator.of(context).push(
-            MaterialPageRoute(
-              builder: (context) => const DetailPage(),
-            ),
-          );
-        },
-        child: Text(AppLocalizations.of(context)!.auto),
-      )),
+            onPressed: () {
+              Navigator.of(context).push(
+                MaterialPageRoute(
+                  builder: (context) => const DetailPage(),
+                ),
+              );
+            },
+            child: Text(AppLocalizations.of(context)!.system),
+          ),
+        ),
+      ),
     );
   }
-
 }
