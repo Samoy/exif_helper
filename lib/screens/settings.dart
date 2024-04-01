@@ -2,7 +2,6 @@ import 'package:exif_helper/common/constant.dart';
 import 'package:exif_helper/models/system.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
-import 'package:provider/provider.dart';
 
 class SettingsPage extends StatefulWidget {
   const SettingsPage({super.key});
@@ -13,7 +12,6 @@ class SettingsPage extends StatefulWidget {
 
 class _SettingsPageState extends State<SettingsPage> {
   List<_SettingItem> _settings = [];
-  final _formKey = GlobalKey<FormState>();
 
   void _buildSettings() {
     _settings = [
@@ -21,15 +19,26 @@ class _SettingsPageState extends State<SettingsPage> {
         key: const Key("theme"),
         icon: Icons.color_lens,
         title: AppLocalizations.of(context)!.theme,
-        options: ThemeMode.values,
-        value: context.watch<SystemModel>().currentThemeMode,
       ),
       _SettingItem<Language>(
         key: const Key("language"),
         icon: Icons.language,
         title: AppLocalizations.of(context)!.language,
-        options: Language.values,
-        value: context.watch<SystemModel>().currentLanguage,
+      ),
+      _SettingItem<Language>(
+        key: const Key("privacy"),
+        icon: Icons.gpp_good_outlined,
+        title: AppLocalizations.of(context)!.privacy,
+      ),
+      _SettingItem<Language>(
+        key: const Key("terms"),
+        icon: Icons.insert_drive_file_outlined,
+        title: AppLocalizations.of(context)!.terms,
+      ),
+      _SettingItem<Language>(
+        key: const Key("about"),
+        icon: Icons.info_outline,
+        title: AppLocalizations.of(context)!.about,
       ),
     ];
   }
@@ -59,51 +68,21 @@ class _SettingsPageState extends State<SettingsPage> {
             ),
           ),
         ),
-        Form(
-          key: _formKey,
-          child: SliverFixedExtentList(
-            delegate: SliverChildBuilderDelegate(
-              (BuildContext context, int index) {
-                _SettingItem<Enum> item = _settings[index];
-                return ListTile(
-                  leading: Icon(item.icon),
-                  title: Text(item.title),
-                  trailing: item.options != null
-                      ? Consumer<SystemModel>(
-                          builder: (context, system, child) {
-                            return DropdownMenu(
-                              initialSelection: item.value,
-                              onSelected: (Enum? value) {
-                                if (value != null) {
-                                  if (item.value is Language) {
-                                    system.setLanguage(value as Language);
-                                  } else if (item.value is ThemeMode) {
-                                    system.setThemeMode(value as ThemeMode);
-                                  }
-                                }
-                              },
-                              dropdownMenuEntries:
-                                  item.options!.map<DropdownMenuEntry<Enum>>(
-                                (e) {
-                                  return DropdownMenuEntry(
-                                    value: e,
-                                    label: AppLocalizations.of(context)!
-                                        .systemValue(
-                                      e.name,
-                                    ),
-                                  );
-                                },
-                              ).toList(),
-                            );
-                          },
-                        )
-                      : null,
-                );
-              },
-              childCount: _settings.length,
-            ),
-            itemExtent: 80,
-          ),
+        SliverList.builder(
+          itemBuilder: (context, index) {
+            _SettingItem item = _settings[index];
+            return ListTile(
+              minVerticalPadding: normalPadding,
+              leading: Icon(
+                item.icon,
+                color: Theme.of(context).colorScheme.primary,
+              ),
+              title: Text(item.title),
+              trailing: const Icon(Icons.chevron_right_outlined),
+              onTap: () {},
+            );
+          },
+          itemCount: _settings.length,
         ),
       ],
     );

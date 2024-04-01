@@ -18,5 +18,7 @@
     }
   },
   "language": "Language",
-  "about": "About"
+  "about": "About",
+  "privacy":"Privacy Policy",
+  "terms": "Terms of Service"
 }
