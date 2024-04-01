@@ -127,19 +127,25 @@ class _IndexPageState extends State<IndexPage> with WindowListener {
   }
 
   Widget _buildIcon(_ScaffoldDestination destination) {
+    bool selected = _selectedIndex == _destinations.indexOf(destination);
+    const double selectedScale = 1.1;
+    const double unselectedScale = 1.0;
     return AnimatedSwitcher(
-      duration: const Duration(milliseconds: 200),
+      duration: const Duration(milliseconds: 100),
+      switchInCurve: Curves.easeIn,
+      switchOutCurve: Curves.easeOut,
       transitionBuilder: (Widget child, Animation<double> animation) {
-        //执行缩放动画
+        final scaleValue = Tween<double>(
+          end: selected ? selectedScale : unselectedScale,
+          begin: selected ? unselectedScale : selectedScale,
+        ).animate(animation);
         return ScaleTransition(
-          scale: animation,
+          scale: scaleValue, // 使用这里的scaleValue替换原本的animation
           child: child,
         );
       },
       child: Icon(
-        _selectedIndex == _destinations.indexOf(destination)
-            ? destination.selectedIcon
-            : destination.icon,
+        selected ? destination.selectedIcon : destination.icon,
         key: ValueKey<int>(_selectedIndex),
       ),
     );
