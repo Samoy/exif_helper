@@ -18,16 +18,6 @@ class _RecentPageState extends State<RecentPage> {
         MySliverAppBar(
           title: AppLocalizations.of(context)!.recent,
         ),
-        SliverList(
-          delegate: SliverChildBuilderDelegate(
-            (context, index) {
-              return ListTile(
-                title: Text('Item $index'),
-              );
-            },
-            childCount: 100,
-          ),
-        ),
       ],
     );
   }

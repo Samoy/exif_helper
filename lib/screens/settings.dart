@@ -79,10 +79,9 @@ class _SettingsPageState extends State<SettingsPage> {
                         builder: (context, systemModel, child) =>
                             DropdownButton<Enum>(
                           focusColor: Colors.transparent,
-                          padding: const EdgeInsets.symmetric(
-                            horizontal: normalPadding,
+                          padding: const EdgeInsets.only(
+                            left: normalPadding,
                           ),
-                          enableFeedback: false,
                           value: item.value,
                           items: item.options!.map((o) {
                             return DropdownMenuItem(

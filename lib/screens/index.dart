@@ -1,4 +1,5 @@
 import 'package:exif_helper/common/constant.dart';
+import 'package:exif_helper/screens/home.dart';
 import 'package:exif_helper/screens/recent.dart';
 import 'package:exif_helper/screens/settings.dart';
 import 'package:flutter/material.dart';
@@ -41,6 +42,12 @@ class _IndexPageState extends State<IndexPage> with WindowListener {
         label: AppLocalizations.of(context)!.recent,
         page: const RecentPage(),
         selectedIcon: Icons.history,
+      ),
+      _ScaffoldDestination(
+        icon: Icons.explore_outlined,
+        label: AppLocalizations.of(context)!.explore,
+        page: const HomePage(),
+        selectedIcon: Icons.explore,
       ),
       _ScaffoldDestination(
         icon: Icons.settings_outlined,
@@ -131,16 +138,16 @@ class _IndexPageState extends State<IndexPage> with WindowListener {
 
   Widget _buildIcon(_ScaffoldDestination destination) {
     bool selected = _selectedIndex == _destinations.indexOf(destination);
-    const double selectedScale = 1.1;
+    const double selectedScale = 1.2;
     const double unselectedScale = 1.0;
     return AnimatedSwitcher(
-      duration: const Duration(milliseconds: 100),
+      duration: const Duration(milliseconds: 150),
       switchInCurve: Curves.easeIn,
       switchOutCurve: Curves.easeOut,
       transitionBuilder: (Widget child, Animation<double> animation) {
         final scaleValue = Tween<double>(
-          end: selected ? selectedScale : unselectedScale,
-          begin: selected ? unselectedScale : selectedScale,
+          end: selected ? selectedScale : 1,
+          begin: selected ? unselectedScale : 1,
         ).animate(animation);
         return ScaleTransition(
           scale: scaleValue, // 使用这里的scaleValue替换原本的animation
