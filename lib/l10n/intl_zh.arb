@@ -23,5 +23,7 @@
   "about": "关于应用",
   "privacy":"隐私政策",
   "terms": "服务协议",
-  "explore": "浏览"
+  "explore": "浏览",
+  "selectImage":"选择图片",
+  "save":"保存"
  }

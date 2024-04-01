@@ -21,5 +21,7 @@
   "about": "About",
   "privacy":"Privacy Policy",
   "terms": "Terms of Service",
-  "explore": "Explore"
+  "explore": "Explore",
+  "save": "Save",
+  "selectImage":"Select Image"
 }

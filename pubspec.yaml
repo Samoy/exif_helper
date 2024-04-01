@@ -41,6 +41,8 @@ dependencies:
   url_launcher: ^6.2.5
   file_picker: ^8.0.0+1
   flutter_svg: ^2.0.10+1
+  image: ^4.1.7
+  path: ^1.9.0
 dev_dependencies:
   flutter_test:
     sdk: flutter
