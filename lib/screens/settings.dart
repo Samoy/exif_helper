@@ -1,11 +1,9 @@
 import 'package:exif_helper/common/constant.dart';
 import 'package:exif_helper/models/system.dart';
-import 'package:exif_helper/screens/select.dart';
 import 'package:exif_helper/widgets/my_sliver_app_bar.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:provider/provider.dart';
-import 'package:routerino/routerino.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 class SettingsPage extends StatefulWidget {
@@ -133,7 +131,7 @@ class _SettingsPageState extends State<SettingsPage> {
         applicationIcon: const FlutterLogo(),
         applicationName: AppLocalizations.of(context)!.appTitle,
         applicationVersion: appVersion,
-        applicationLegalese: "Copyright © 2023",
+        applicationLegalese: "Copyright © ${DateTime.now().year}",
       );
     }
   }

@@ -3,28 +3,46 @@ import 'dart:ui';
 import 'package:exif_helper/screens/index.dart';
 import 'package:exif_helper/theme/theme.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:provider/provider.dart';
 import 'package:window_manager/window_manager.dart';
 import 'package:routerino/routerino.dart';
 import 'package:exif_helper/models/system.dart';
 
+import 'extensions/platform_extension.dart';
+
 void main() async {
-  await initWindowOptions();
+  WidgetsFlutterBinding.ensureInitialized();
+  if (PlatformExtension.isDesktop) {
+    await initDesktop();
+  } else {
+    initMobile();
+  }
   runApp(const MyApp());
 }
 
-Future<void> initWindowOptions() async {
-  WidgetsFlutterBinding.ensureInitialized();
+Future<void> initDesktop() async {
   await windowManager.ensureInitialized();
   WindowOptions windowOptions = const WindowOptions(
     center: true,
     titleBarStyle: TitleBarStyle.normal,
+    minimumSize: Size(400, 700),
+    size: Size(1000, 800),
   );
   windowManager.waitUntilReadyToShow(windowOptions, () async {
     await windowManager.show();
     await windowManager.focus();
   });
+}
+
+void initMobile() {
+  SystemChrome.setEnabledSystemUIMode(SystemUiMode.edgeToEdge);
+  SystemChrome.setSystemUIOverlayStyle(
+    const SystemUiOverlayStyle(
+      systemNavigationBarColor: Colors.transparent,
+    ),
+  );
 }
 
 class MyApp extends StatefulWidget {
@@ -47,9 +65,11 @@ class _MyAppState extends State<MyApp> {
             debugShowCheckedModeBanner: false,
             onGenerateTitle: (context) {
               String title = AppLocalizations.of(context)!.appTitle;
-              (() async {
-                await windowManager.setTitle(title);
-              })();
+              if (PlatformExtension.isDesktop) {
+                (() async {
+                  await windowManager.setTitle(title);
+                })();
+              }
               return title;
             },
             theme: lightTheme,
