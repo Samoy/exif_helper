@@ -14,6 +14,11 @@ class SystemModel extends ChangeNotifier {
 
   get currentThemeMode => _themeMode;
 
+  Map<Type, Enum> get currentSystemValue => {
+        Language: currentLanguage,
+        ThemeMode: currentThemeMode,
+      };
+
   void init() async {
     _prefs = await SharedPreferences.getInstance();
     if (_prefs.containsKey('language')) {
@@ -46,6 +51,14 @@ class SystemModel extends ChangeNotifier {
     _themeMode = themeMode;
     await _prefs.setString('themeMode', themeMode.name);
     notifyListeners();
+  }
+
+  void setSystemValue(Enum systemValue) async {
+    if (systemValue is Language) {
+      setLanguage(systemValue);
+    } else if (systemValue is ThemeMode) {
+      setThemeMode(systemValue);
+    }
   }
 }
 

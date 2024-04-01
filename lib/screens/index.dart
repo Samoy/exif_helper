@@ -1,4 +1,5 @@
-import 'package:exif_helper/screens/home.dart';
+import 'package:exif_helper/common/constant.dart';
+import 'package:exif_helper/screens/recent.dart';
 import 'package:exif_helper/screens/settings.dart';
 import 'package:flutter/material.dart';
 import 'package:window_manager/window_manager.dart';
@@ -38,7 +39,7 @@ class _IndexPageState extends State<IndexPage> with WindowListener {
       _ScaffoldDestination(
         icon: Icons.history_outlined,
         label: AppLocalizations.of(context)!.recent,
-        page: const HomePage(),
+        page: const RecentPage(),
         selectedIcon: Icons.history,
       ),
       _ScaffoldDestination(
@@ -81,10 +82,12 @@ class _IndexPageState extends State<IndexPage> with WindowListener {
                   _selectedIndex = index;
                 });
               },
-              minWidth: 100,
               labelType: NavigationRailLabelType.all,
-              leading: Container(
-                height: 64,
+              leading: const SizedBox(
+                height: appLogoSize,
+                child: CircleAvatar(
+                  child: FlutterLogo(),
+                ),
               ),
               destinations: _destinations
                   .map(

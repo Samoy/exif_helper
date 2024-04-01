@@ -8,7 +8,7 @@
   "recent": "Recent",
   "settings": "Settings",
   "theme": "Theme",
-  "systemValue": "{value, select, light{Light} zh{简体中文} en{English} dark{Dark} other{System}}",
+  "systemValue": "{value, select, light{Light}  dark{Dark} zh{简体中文} en{English} other{System}}",
   "@systemValue": {
     "description": "A system value",
     "placeholders": {
