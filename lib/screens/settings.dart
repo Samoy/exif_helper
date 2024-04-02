@@ -73,42 +73,13 @@ class _SettingsPageState extends State<SettingsPage> {
                 color: Theme.of(context).colorScheme.primary,
               ),
               title: Text(item.title),
-              trailing: item.options != null
-                  ? DropdownButtonHideUnderline(
-                      child: Consumer<SystemModel>(
-                        builder: (context, systemModel, child) =>
-                            DropdownButton<Enum>(
-                          focusColor: Colors.transparent,
-                          padding: const EdgeInsets.only(
-                            left: normalPadding,
-                          ),
-                          value: item.value,
-                          items: item.options!.map((o) {
-                            return DropdownMenuItem(
-                              value: o,
-                              child: Text(AppLocalizations.of(context)!
-                                  .systemValue(o.name)),
-                            );
-                          }).toList(),
-                          onChanged: (Enum? value) {
-                            if (value != null) {
-                              systemModel.setSystemValue(value);
-                            }
-                          },
-                        ),
-                      ),
-                    )
-                  : Icon(
-                      size: largeFontSize,
-                      item.url != null
-                          ? Icons.launch_outlined
-                          : Icons.chevron_right_outlined,
-                    ),
-              onTap: item.options != null
-                  ? null
-                  : () {
-                      _onTab(context, item);
-                    },
+              subtitle: item.value != null
+                  ? Text(AppLocalizations.of(context)!
+                      .systemValue(item.value!.name))
+                  : null,
+              onTap: () {
+                _onTap(context, item);
+              },
             );
           },
           itemCount: _settings.length,
@@ -117,7 +88,35 @@ class _SettingsPageState extends State<SettingsPage> {
     );
   }
 
-  void _onTab(BuildContext context, _SettingItem item) async {
+  void _onTap(BuildContext context, _SettingItem item) async {
+    if (item.options != null) {
+      showDialog(
+        context: context,
+        builder: (context) {
+          return SimpleDialog(
+            title: Text(item.title),
+            children: item.options!.map((e) {
+              return SimpleDialogOption(
+                child: Row(
+                  children: [
+                    Radio(
+                      value: e.name,
+                      groupValue: item.value?.name,
+                      onChanged: (value) {},
+                    ),
+                    Text(AppLocalizations.of(context)!.systemValue(e.name)),
+                  ],
+                ),
+                onPressed: () {
+                  context.read<SystemModel>().setSystemValue(e);
+                  Navigator.of(context).pop();
+                },
+              );
+            }).toList(),
+          );
+        },
+      );
+    }
     if (item.url != null) {
       if (await canLaunchUrl(item.url!)) {
         await launchUrl(item.url!);

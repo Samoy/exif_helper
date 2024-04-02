@@ -1,11 +1,11 @@
 {
-  "@@locale":"zh",
+  "@@locale": "zh",
   "appTitle": "Exif小助手",
   "system": "跟随系统",
   "ok": "确定",
   "cancel": "取消",
   "exifConfirm": "确定要退出吗？",
-  "recent": "最近",
+  "home": "主页",
   "settings": "设置",
   "theme": "主题",
   "systemValue": "{value, select, light{浅色} dark{深色} zh{简体中文} en{English} other{跟随系统}}",
@@ -21,9 +21,18 @@
   "dark": "深色",
   "language": "语言",
   "about": "关于应用",
-  "privacy":"隐私政策",
+  "privacy": "隐私政策",
   "terms": "服务协议",
-  "explore": "浏览",
-  "selectImage":"选择图片",
-  "save":"保存"
- }
+  "history": "历史",
+  "historyRecord": "历史记录",
+  "selectImage": "请选择一张图片",
+  "dragImage": "或拖拽图片到此处",
+  "exifInfo": "Exif信息",
+  "invalidImageType": "无效的图片类型",
+  "supportImageFormatBelow": "支持以下图片格式：",
+  "clearImage": "清空图片",
+  "searchExif": "搜索Exif",
+  "resetExif": "重置Exif",
+  "noExifData": "无Exif数据",
+  "save": "保存"
+}

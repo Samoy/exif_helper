@@ -43,6 +43,7 @@ dependencies:
   flutter_svg: ^2.0.10+1
   image: ^4.1.7
   path: ^1.9.0
+  desktop_drop: ^0.4.4
 dev_dependencies:
   flutter_test:
     sdk: flutter

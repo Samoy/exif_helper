@@ -3,20 +3,20 @@ import 'package:flutter/material.dart';
 import '../widgets/my_sliver_app_bar.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
-class RecentPage extends StatefulWidget {
-  const RecentPage({super.key});
+class HistoryPage extends StatefulWidget {
+  const HistoryPage({super.key});
 
   @override
-  State<RecentPage> createState() => _RecentPageState();
+  State<HistoryPage> createState() => _HistoryPageState();
 }
 
-class _RecentPageState extends State<RecentPage> {
+class _HistoryPageState extends State<HistoryPage> {
   @override
   Widget build(BuildContext context) {
     return CustomScrollView(
       slivers: [
         MySliverAppBar(
-          title: AppLocalizations.of(context)!.recent,
+          title: AppLocalizations.of(context)!.historyRecord,
         ),
       ],
     );

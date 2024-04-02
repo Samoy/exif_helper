@@ -1,12 +1,13 @@
 import 'dart:io';
 
+import 'package:desktop_drop/desktop_drop.dart';
+import 'package:exif_helper/extensions/platform_extension.dart';
 import 'package:exif_helper/widgets/dashed_container.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:flutter_svg/flutter_svg.dart';
-import 'package:window_manager/window_manager.dart';
 import 'package:image/image.dart' as image;
 import 'package:path/path.dart' as path;
 
@@ -20,16 +21,13 @@ class HomePage extends StatefulWidget {
   State<HomePage> createState() => _HomePageState();
 }
 
-class _HomePageState extends State<HomePage> with WindowListener {
+class _HomePageState extends State<HomePage> {
   final ScrollController _scrollController = ScrollController();
+  final List<String> _allowedExtensions = ["jpg", "jpeg", "tif", "tiff"];
+  final double fileIconSize = 64.0;
   String _imagePath = "";
-  image.Image? _image;
+  bool _isDragging = false;
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
-
-  @override
-  void initState() {
-    super.initState();
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -38,14 +36,39 @@ class _HomePageState extends State<HomePage> with WindowListener {
         CustomScrollView(
           controller: _scrollController,
           slivers: [
-            SliverToBoxAdapter(
-              child: Padding(
-                padding: const EdgeInsets.all(normalPadding),
-                child: Text(
-                  AppLocalizations.of(context)!.selectImage,
-                  style: Theme.of(context).textTheme.headlineSmall,
+            SliverAppBar(
+              title: Text(AppLocalizations.of(context)!.home),
+              actions: [
+                PopupMenuButton<_Menu>(
+                  icon: const Icon(Icons.more_vert),
+                  onSelected: _menuSelected,
+                  itemBuilder: (BuildContext context) =>
+                      <PopupMenuEntry<_Menu>>[
+                    PopupMenuItem<_Menu>(
+                      value: _Menu.search,
+                      child: ListTile(
+                        leading: const Icon(Icons.search_outlined),
+                        title: Text(AppLocalizations.of(context)!.searchExif),
+                      ),
+                    ),
+                    PopupMenuItem<_Menu>(
+                      value: _Menu.reset,
+                      child: ListTile(
+                        leading: const Icon(Icons.refresh_outlined),
+                        title: Text(AppLocalizations.of(context)!.resetExif),
+                      ),
+                    ),
+                    PopupMenuItem<_Menu>(
+                      value: _Menu.clear,
+                      child: ListTile(
+                        leading: const Icon(Icons.clear_all_outlined),
+                        title: Text(AppLocalizations.of(context)!.clearImage),
+                      ),
+                    ),
+                  ],
                 ),
-              ),
+              ],
+              pinned: false,
             ),
             SliverToBoxAdapter(
               child: Padding(
@@ -55,72 +78,87 @@ class _HomePageState extends State<HomePage> with WindowListener {
                   child: DashedContainer(
                     width: double.infinity,
                     height: 300,
-                    child: _imagePath.isEmpty
-                        ? Column(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: [
-                              SvgPicture.asset(
-                                width: 64.0,
-                                "assets/images/upload.svg",
-                                colorFilter: ColorFilter.mode(
-                                    Theme.of(context).colorScheme.secondary,
-                                    BlendMode.srcIn),
-                              ),
-                              const SizedBox(
-                                height: normalMargin,
-                              ),
-                              Text("请选择一张照片或拖拽照片至此处")
-                            ],
+                    color: _isDragging
+                        ? Colors.red.withOpacity(0.2)
+                        : Colors.grey.withOpacity(0.2),
+                    child: PlatformExtension.isDesktop
+                        ? DropTarget(
+                            onDragDone: (detail) {
+                              _onDragDone(context, detail);
+                            },
+                            onDragEntered: (detail) {
+                              setState(() {
+                                _isDragging = true;
+                              });
+                            },
+                            onDragExited: (detail) {
+                              setState(() {
+                                _isDragging = false;
+                              });
+                            },
+                            child: _buildImagePanel(),
                           )
-                        : Image.file(
-                            File(_imagePath),
-                            fit: BoxFit.contain,
-                          ),
+                        : _buildImagePanel(),
                   ),
-                ),
-              ),
-            ),
-            SliverToBoxAdapter(
-              child: Padding(
-                padding: const EdgeInsets.all(normalPadding),
-                child: Text(
-                  "Exif信息",
-                  style: Theme.of(context).textTheme.headlineSmall,
                 ),
               ),
             ),
             _imagePath.isEmpty
-                ? const SliverFillRemaining(
-                    hasScrollBody: false,
+                ? SliverFillRemaining(
                     child: Center(
-                      child: Text("暂无数据"),
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Text(AppLocalizations.of(context)!
+                              .supportImageFormatBelow),
+                          const SizedBox(
+                            height: normalMargin,
+                          ),
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              for (var extension in _allowedExtensions)
+                                Padding(
+                                  padding:
+                                      const EdgeInsets.all(normalPadding / 2),
+                                  child: SvgPicture.asset(
+                                    "assets/images/$extension.svg",
+                                    width: fileIconSize,
+                                    height: fileIconSize,
+                                  ),
+                                ),
+                            ],
+                          ),
+                        ],
+                      ),
                     ),
                   )
-                : FutureBuilder<image.Image?>(
+                : FutureBuilder(
                     future: _fetchExifData(),
                     builder: (context, snapshot) {
-                      if (snapshot.hasData &&
-                          snapshot.data != null &&
-                          snapshot.data!.hasExif) {
-                        _image = snapshot.data!.clone();
-                        final exifData = snapshot.data?.exif;
-                        return _buildExifData(exifData!);
-                      }
-                      return SliverFillRemaining(
-                        hasScrollBody: false,
-                        child: Center(
-                          child: snapshot.hasData
-                              ? const Text("无Exif数据")
-                              : const CircularProgressIndicator(),
-                        ),
-                      );
+                      return snapshot.connectionState == ConnectionState.done
+                          ? snapshot.data == null
+                              ? SliverFillRemaining(
+                                  child: Center(
+                                    child: Text(AppLocalizations.of(context)!
+                                        .noExifData),
+                                  ),
+                                )
+                              : _buildExifData(snapshot.data!)
+                          : const SliverFillRemaining(
+                              hasScrollBody: false,
+                              child: Center(
+                                child: CircularProgressIndicator(),
+                              ),
+                            );
                     },
                   ),
             const SliverToBoxAdapter(
               child: SizedBox(
-                height: extraLargePadding + normalButtonHeight,
+                width: double.infinity,
+                height: 80,
               ),
-            )
+            ),
           ],
         ),
         Align(
@@ -138,28 +176,33 @@ class _HomePageState extends State<HomePage> with WindowListener {
               ),
             ),
           ),
-        ),
+        )
       ],
     );
   }
 
-  void _selectImage() async {
-    FilePickerResult? result = await FilePicker.platform.pickFiles(
-      type: FileType.custom,
-      allowedExtensions: ["jpg", "jpeg", "tif", "tiff"],
-      allowMultiple: false,
-    );
-    if (result != null) {
-      setState(() {
-        _imagePath = result.files.single.path!;
-      });
-    }
-  }
-
-  Future<image.Image?> _fetchExifData() {
-    return compute((path) {
-      return image.decodeImageFile(path);
-    }, _imagePath);
+  Widget _buildImagePanel() {
+    return _imagePath.isEmpty
+        ? Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              SvgPicture.asset(
+                width: 64.0,
+                "assets/images/upload.svg",
+                colorFilter: ColorFilter.mode(
+                    Theme.of(context).colorScheme.secondary, BlendMode.srcIn),
+              ),
+              const SizedBox(
+                height: normalMargin,
+              ),
+              Text(
+                  "${AppLocalizations.of(context)!.selectImage}${PlatformExtension.isDesktop ? AppLocalizations.of(context)!.dragImage : ""}")
+            ],
+          )
+        : Image.file(
+            File(_imagePath),
+            fit: BoxFit.contain,
+          );
   }
 
   Widget _buildExifData(image.ExifData directories) {
@@ -263,6 +306,54 @@ class _HomePageState extends State<HomePage> with WindowListener {
         .toList();
   }
 
+  void _menuSelected(_Menu item) {
+    switch (item) {
+      case _Menu.search:
+        break;
+      case _Menu.reset:
+        break;
+      case _Menu.clear:
+        setState(() {
+          _imagePath = "";
+        });
+        break;
+    }
+  }
+
+  void _selectImage() async {
+    FilePickerResult? result = await FilePicker.platform.pickFiles(
+      type: FileType.custom,
+      allowedExtensions: _allowedExtensions,
+      allowMultiple: false,
+    );
+    if (result != null) {
+      setState(() {
+        _imagePath = result.files.single.path!;
+      });
+    }
+  }
+
+  void _onDragDone(BuildContext context, DropDoneDetails detail) {
+    setState(() {
+      if (detail.files.isNotEmpty) {
+        String filePath = detail.files.first.path;
+        String extension = path.extension(filePath).substring(1).toLowerCase();
+        if (_allowedExtensions.contains(extension)) {
+          _imagePath = detail.files.first.path;
+        } else {
+          _showTips(AppLocalizations.of(context)!.invalidImageType);
+        }
+      }
+      _isDragging = false;
+    });
+  }
+
+  Future<image.ExifData?> _fetchExifData() {
+    return compute((path) {
+      return image.decodeImageFile(path).then((value) => value?.exif);
+    }, _imagePath);
+  }
+
   String _getSubTagName(String subName, int tag) {
     switch (subName) {
       case "gps":
@@ -289,44 +380,10 @@ class _HomePageState extends State<HomePage> with WindowListener {
     }
   }
 
-  void _changeExifValue(
-      Map<String, image.IfdValue?> info, String tag, String key, String value) {
-    image.IfdValue? ifdValue = info[key]?.clone();
-    if (ifdValue != null && value.isNotEmpty) {
-      try {
-        _setIfdValue(ifdValue, key, value);
-        switch (tag) {
-          case "ifd0":
-            _image?.exif.imageIfd[key] = ifdValue;
-          case "ifd1":
-            _image?.exif.thumbnailIfd[key] = ifdValue;
-          case "exif":
-            _image?.exif.exifIfd[key] = ifdValue;
-          case "gps":
-            _image?.exif.gpsIfd[key] = ifdValue;
-          case "interop":
-            _image?.exif.interopIfd[key] = ifdValue;
-        }
-      } on FormatException catch (e) {
-        debugPrint("格式不正确$e");
-      }
-    }
-  }
+  void _changeExifValue(Map<String, image.IfdValue?> info, String tag,
+      String key, String value) {}
 
-  _setIfdValue(image.IfdValue ifdValue, String key, String value) {
-    Type type = ifdValue.runtimeType;
-    if (value.startsWith("[") && value.endsWith("]")) {
-      List<String> valueArray = value.substring(1, value.length - 1).split(",");
-      for (int i = 0; i < valueArray.length; i++) {
-        final item = valueArray[i].trim();
-        if (item.isNotEmpty) {
-          _setSinglesValue(type, ifdValue, item, index: i);
-        }
-      }
-    } else {
-      _setSinglesValue(type, ifdValue, value);
-    }
-  }
+  _setIfdValue(image.IfdValue ifdValue, String key, String value) {}
 
   void _setSinglesValue(Type type, image.IfdValue ifdValue, String value,
       {index = 0}) {
@@ -357,64 +414,11 @@ class _HomePageState extends State<HomePage> with WindowListener {
     }
   }
 
-  void _saveExifData() async {
-    if (_image != null) {
-      // 这里添加这行代码是为了取出exif数据，否则exif数据不会保存到文件中
-      // 不要删除这行代码
-      _image?.exif = _image!.exif.clone();
-    } else {
-      _showTips("无法保存，请重试");
-    }
+  void _saveExifData() async {}
 
-    String extension = path.extension(_imagePath).substring(1);
-    String fileName =
-        "${path.basenameWithoutExtension(_imagePath)}-副本.$extension";
-    if (Platform.isAndroid || Platform.isIOS) {
-      _saveFileToMobile(fileName, extension);
-    } else {
-      _saveFile(fileName, extension);
-    }
-  }
+  void _saveFileToMobile(String fileName, String extension) async {}
 
-  void _saveFileToMobile(String fileName, String extension) async {
-    String lowerCaseExtension = extension.toLowerCase();
-    Uint8List? bytes;
-    if (lowerCaseExtension == "jpg" || lowerCaseExtension == "jpeg") {
-      bytes = image.encodeJpg(_image!);
-    } else if (lowerCaseExtension == "tif" || lowerCaseExtension == "tiff") {
-      bytes = image.encodeTiff(_image!);
-    } else {
-      _showTips("不支持的文件格式");
-    }
-    if (bytes != null) {
-      FilePicker.platform
-          .saveFile(
-        dialogTitle: "保存图片",
-        type: FileType.custom,
-        fileName: fileName,
-        allowedExtensions: [extension],
-        bytes: bytes,
-      )
-          .then((path) async {
-        _showTips(path != null ? "保存成功" : "保存失败");
-      });
-    }
-  }
-
-  void _saveFile(String fileName, String extension) {
-    FilePicker.platform.saveFile(
-      dialogTitle: "保存图片",
-      type: FileType.custom,
-      fileName: fileName,
-      allowedExtensions: [extension],
-    ).then((path) async {
-      if (path != null) {
-        image.encodeImageFile(path, _image!).then((success) {
-          _showTips(success ? "保存成功" : "保存失败");
-        });
-      }
-    });
-  }
+  void _saveFile(String fileName, String extension) {}
 
   void _showTips(String message) {
     ScaffoldMessenger.of(context).showSnackBar(
@@ -425,3 +429,5 @@ class _HomePageState extends State<HomePage> with WindowListener {
     );
   }
 }
+
+enum _Menu { search, clear, reset }

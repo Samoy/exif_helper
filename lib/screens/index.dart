@@ -1,6 +1,6 @@
 import 'package:exif_helper/common/constant.dart';
 import 'package:exif_helper/screens/home.dart';
-import 'package:exif_helper/screens/recent.dart';
+import 'package:exif_helper/screens/history.dart';
 import 'package:exif_helper/screens/settings.dart';
 import 'package:flutter/material.dart';
 import 'package:window_manager/window_manager.dart';
@@ -38,16 +38,16 @@ class _IndexPageState extends State<IndexPage> with WindowListener {
   void _buildDestinations() {
     _destinations = [
       _ScaffoldDestination(
-        icon: Icons.history_outlined,
-        label: AppLocalizations.of(context)!.recent,
-        page: const RecentPage(),
-        selectedIcon: Icons.history,
+        icon: Icons.image_outlined,
+        label: AppLocalizations.of(context)!.home,
+        page: const HomePage(),
+        selectedIcon: Icons.image,
       ),
       _ScaffoldDestination(
-        icon: Icons.explore_outlined,
-        label: AppLocalizations.of(context)!.explore,
-        page: const HomePage(),
-        selectedIcon: Icons.explore,
+        icon: Icons.history_outlined,
+        label: AppLocalizations.of(context)!.history,
+        page: const HistoryPage(),
+        selectedIcon: Icons.history,
       ),
       _ScaffoldDestination(
         icon: Icons.settings_outlined,
@@ -107,7 +107,10 @@ class _IndexPageState extends State<IndexPage> with WindowListener {
             ),
             const VerticalDivider(thickness: 1, width: 1),
             Expanded(
-              child: _destinations[_selectedIndex].page,
+              child:  IndexedStack(
+                index: _selectedIndex,
+                children: _destinations.map((item) => item.page).toList(),
+              ),
             ),
           ],
         ),

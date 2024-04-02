@@ -25,7 +25,7 @@ const double appLogoSize = 80;
 const double dialogLogoSize = 40;
 
 
-const double normalButtonWidth = 240;
+const double normalButtonWidth = 300;
 const double normalButtonHeight = 40;
 
 /*--------------------Dimension   End--------------------*/
