@@ -5,7 +5,7 @@
   "ok": "Ok",
   "cancel": "Cancel",
   "exifConfirm": "Are you sure you want to exit?",
-  "home": "Home",
+  "home": "Exif",
   "settings": "Settings",
   "theme": "Theme",
   "systemValue": "{value, select, light{Light}  dark{Dark} zh{简体中文} en{English} other{System}}",
@@ -27,10 +27,12 @@
   "dragImage": "or drag image to here",
   "exifInfo": "Exif Info",
   "invalidImageType": "Invalid image type",
-  "supportImageFormatBelow": "Image formats below supported:",
+  "supportImageFormatBelow": "Image formats below supported",
   "clearImage": "Clear Image",
   "searchExif": "Search Exif",
   "resetExif": "Reset Exif",
   "noExifData": "No Exif Data",
-  "save": "Save"
+  "save": "Save",
+  "saveImage": "Save Image",
+  "saveImageInfo": "Image Exif has been modified, do you want to save it?"
 }

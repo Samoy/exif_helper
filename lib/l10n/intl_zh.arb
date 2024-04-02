@@ -5,7 +5,7 @@
   "ok": "确定",
   "cancel": "取消",
   "exifConfirm": "确定要退出吗？",
-  "home": "主页",
+  "home": "Exif",
   "settings": "设置",
   "theme": "主题",
   "systemValue": "{value, select, light{浅色} dark{深色} zh{简体中文} en{English} other{跟随系统}}",
@@ -29,10 +29,12 @@
   "dragImage": "或拖拽图片到此处",
   "exifInfo": "Exif信息",
   "invalidImageType": "无效的图片类型",
-  "supportImageFormatBelow": "支持以下图片格式：",
+  "supportImageFormatBelow": "支持以下图片格式",
   "clearImage": "清空图片",
   "searchExif": "搜索Exif",
   "resetExif": "重置Exif",
   "noExifData": "无Exif数据",
-  "save": "保存"
+  "save": "保存",
+  "saveImage": "保存图片",
+  "saveImageInfo": "Exif信息已被修改，是否保存修改后的图片？"
 }

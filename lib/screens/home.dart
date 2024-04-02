@@ -14,6 +14,8 @@ import 'package:path/path.dart' as path;
 import '../common/constant.dart';
 import '../models/exif.dart';
 
+enum _Menu { search, clear, reset }
+
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
 
@@ -26,6 +28,7 @@ class _HomePageState extends State<HomePage> {
   final List<String> _allowedExtensions = ["jpg", "jpeg", "tif", "tiff"];
   final double fileIconSize = 64.0;
   String _imagePath = "";
+  image.Image? _image;
   bool _isDragging = false;
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
 
@@ -68,7 +71,7 @@ class _HomePageState extends State<HomePage> {
                   ],
                 ),
               ],
-              pinned: false,
+              pinned: true,
             ),
             SliverToBoxAdapter(
               child: Padding(
@@ -137,14 +140,19 @@ class _HomePageState extends State<HomePage> {
                     future: _fetchExifData(),
                     builder: (context, snapshot) {
                       return snapshot.connectionState == ConnectionState.done
-                          ? snapshot.data == null
-                              ? SliverFillRemaining(
-                                  child: Center(
-                                    child: Text(AppLocalizations.of(context)!
-                                        .noExifData),
-                                  ),
-                                )
-                              : _buildExifData(snapshot.data!)
+                          ? (() {
+                              image.Image? img = snapshot.data;
+                              _image = img;
+                              return img == null
+                                  ? SliverFillRemaining(
+                                      child: Center(
+                                        child: Text(
+                                            AppLocalizations.of(context)!
+                                                .noExifData),
+                                      ),
+                                    )
+                                  : _buildExifData(img.exif);
+                            }())
                           : const SliverFillRemaining(
                               hasScrollBody: false,
                               child: Center(
@@ -161,22 +169,47 @@ class _HomePageState extends State<HomePage> {
             ),
           ],
         ),
-        Align(
-          alignment: Alignment.bottomCenter,
-          child: Padding(
-            padding: const EdgeInsets.all(normalPadding),
-            child: SizedBox(
-              width: normalButtonWidth,
-              height: normalButtonHeight,
-              child: FilledButton(
-                child: Text(AppLocalizations.of(context)!.save),
-                onPressed: () {
-                  _saveExifData();
-                },
+        if (_imagePath.isNotEmpty)
+          Align(
+            alignment: Alignment.bottomCenter,
+            child: Padding(
+              padding: const EdgeInsets.all(normalPadding),
+              child: SizedBox(
+                width: normalButtonWidth,
+                height: normalButtonHeight,
+                child: FilledButton(
+                  child: Text(AppLocalizations.of(context)!.save),
+                  onPressed: () {
+                    showDialog(
+                      context: context,
+                      builder: (context) {
+                        return AlertDialog(
+                          title: Text(AppLocalizations.of(context)!.saveImage),
+                          content:
+                              Text(AppLocalizations.of(context)!.saveImageInfo),
+                          actions: [
+                            TextButton(
+                              child: Text(AppLocalizations.of(context)!.cancel),
+                              onPressed: () {
+                                Navigator.of(context).pop();
+                              },
+                            ),
+                            FilledButton(
+                              child: Text(AppLocalizations.of(context)!.ok),
+                              onPressed: () {
+                                Navigator.of(context).pop();
+                                _saveExifData();
+                              },
+                            ),
+                          ],
+                        );
+                      },
+                    );
+                  },
+                ),
               ),
             ),
           ),
-        )
       ],
     );
   }
@@ -309,15 +342,28 @@ class _HomePageState extends State<HomePage> {
   void _menuSelected(_Menu item) {
     switch (item) {
       case _Menu.search:
+        _searchExif();
         break;
       case _Menu.reset:
+        _resetExif();
         break;
       case _Menu.clear:
-        setState(() {
-          _imagePath = "";
-        });
+        _clearImage();
         break;
     }
+  }
+
+  void _searchExif() {}
+
+  void _resetExif() {
+    _formKey.currentState?.reset();
+  }
+
+  void _clearImage() {
+    _image = null;
+    setState(() {
+      _imagePath = "";
+    });
   }
 
   void _selectImage() async {
@@ -348,9 +394,9 @@ class _HomePageState extends State<HomePage> {
     });
   }
 
-  Future<image.ExifData?> _fetchExifData() {
+  Future<image.Image?> _fetchExifData() {
     return compute((path) {
-      return image.decodeImageFile(path).then((value) => value?.exif);
+      return image.decodeImageFile(path).then((value) => value);
     }, _imagePath);
   }
 
@@ -380,33 +426,77 @@ class _HomePageState extends State<HomePage> {
     }
   }
 
-  void _changeExifValue(Map<String, image.IfdValue?> info, String tag,
-      String key, String value) {}
+  void _changeExifValue(
+      Map<String, image.IfdValue?> info, String tag, String key, String value) {
+    image.IfdValue? ifdValue = info[key]?.clone();
+    if (ifdValue != null && value.isNotEmpty) {
+      try {
+        _setIfdValue(ifdValue, key, value);
+        switch (tag) {
+          case "ifd0":
+            _image?.exif.imageIfd[key] = ifdValue;
+          case "ifd1":
+            _image?.exif.thumbnailIfd[key] = ifdValue;
+          case "exif":
+            _image?.exif.exifIfd[key] = ifdValue;
+          case "gps":
+            _image?.exif.gpsIfd[key] = ifdValue;
+          case "interop":
+            _image?.exif.interopIfd[key] = ifdValue;
+        }
+      } on FormatException catch (e) {
+        debugPrint(e.message);
+      }
+    }
+  }
 
-  _setIfdValue(image.IfdValue ifdValue, String key, String value) {}
+  _setIfdValue(image.IfdValue ifdValue, String key, String value) {
+    if (value.startsWith("[") && value.endsWith("]")) {
+      List<String> valueArray = value.substring(1, value.length - 1).split(",");
+      for (int i = 0; i < valueArray.length; i++) {
+        final item = valueArray[i].trim();
+        if (item.isNotEmpty) {
+          _setSinglesValue(
+            ifdValue: ifdValue,
+            value: item,
+            index: i,
+          );
+        }
+      }
+    } else {
+      _setSinglesValue(
+        ifdValue: ifdValue,
+        value: value,
+      );
+    }
+  }
 
-  void _setSinglesValue(Type type, image.IfdValue ifdValue, String value,
-      {index = 0}) {
+  void _setSinglesValue({
+    required image.IfdValue ifdValue,
+    required String value,
+    index = 0,
+  }) {
+    Type type = ifdValue.runtimeType;
     switch (type) {
-      case image.IfdByteValue _:
-      case image.IfdValueShort _:
-      case image.IfdValueLong _:
-      case image.IfdValueSByte _:
-      case image.IfdValueSShort _:
-      case image.IfdValueSLong _:
+      case const (image.IfdByteValue):
+      case const (image.IfdValueShort):
+      case const (image.IfdValueLong):
+      case const (image.IfdValueSByte):
+      case  const (image.IfdValueSShort):
+      case const (image.IfdValueSLong):
         ifdValue.setInt(int.parse(value), index);
         break;
-      case image.IfdValueSingle _:
-      case image.IfdValueDouble _:
+      case const (image.IfdValueSingle):
+      case const  (image.IfdValueDouble):
         ifdValue.setDouble(double.parse(value), index);
         break;
-      case image.IfdValueRational _:
-      case image.IfdValueSRational _:
+      case const  (image.IfdValueRational):
+      case  const (image.IfdValueSRational):
         int numerator = int.parse(value.split("/")[0]);
         int denominator = int.parse(value.split("/")[1]);
         ifdValue.setRational(numerator, denominator, index);
         break;
-      case image.IfdValueAscii _:
+      case  const (image.IfdValueAscii):
         ifdValue.setString(value);
         break;
       default:
@@ -414,11 +504,56 @@ class _HomePageState extends State<HomePage> {
     }
   }
 
-  void _saveExifData() async {}
+  void _saveExifData() async {
+    String extension = path.extension(_imagePath).substring(1);
+    String fileName =
+        "${path.basenameWithoutExtension(_imagePath)}-副本.$extension";
+    if (PlatformExtension.isMobile) {
+      _saveFileToMobile(fileName, extension);
+    } else {
+      _saveFile(fileName, extension);
+    }
+  }
 
-  void _saveFileToMobile(String fileName, String extension) async {}
+  void _saveFile(String fileName, String extension) {
+    FilePicker.platform.saveFile(
+      dialogTitle: "保存图片",
+      type: FileType.custom,
+      fileName: fileName,
+      allowedExtensions: [extension],
+    ).then((path) async {
+      if (path != null) {
+        image.encodeImageFile(path, _image!).then((success) {
+          _showTips(success ? "保存成功" : "保存失败");
+        });
+      }
+    });
+  }
 
-  void _saveFile(String fileName, String extension) {}
+  void _saveFileToMobile(String fileName, String extension) async {
+    String lowerCaseExtension = extension.toLowerCase();
+    Uint8List? bytes;
+    if (lowerCaseExtension == "jpg" || lowerCaseExtension == "jpeg") {
+      bytes = image.encodeJpg(_image!);
+    } else if (lowerCaseExtension == "tif" || lowerCaseExtension == "tiff") {
+      bytes = image.encodeTiff(_image!);
+    } else {
+      _showTips("不支持的文件格式");
+    }
+    if (bytes != null) {
+      FilePicker.platform
+          .saveFile(
+        dialogTitle: "保存图片",
+        type: FileType.custom,
+        fileName: fileName,
+        allowedExtensions: [extension],
+        bytes: bytes,
+      )
+          .then((path) async {
+        _showTips(path != null ? "保存成功" : "保存失败");
+      });
+    }
+  }
 
   void _showTips(String message) {
     ScaffoldMessenger.of(context).showSnackBar(
@@ -429,5 +564,3 @@ class _HomePageState extends State<HomePage> {
     );
   }
 }
-
-enum _Menu { search, clear, reset }
