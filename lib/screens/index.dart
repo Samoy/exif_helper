@@ -107,7 +107,7 @@ class _IndexPageState extends State<IndexPage> with WindowListener {
             ),
             const VerticalDivider(thickness: 1, width: 1),
             Expanded(
-              child:  IndexedStack(
+              child: IndexedStack(
                 index: _selectedIndex,
                 children: _destinations.map((item) => item.page).toList(),
               ),

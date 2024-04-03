@@ -81,7 +81,7 @@ class _MyAppState extends State<MyApp> {
             localizationsDelegates: AppLocalizations.localizationsDelegates,
             supportedLocales: AppLocalizations.supportedLocales,
             navigatorKey: Routerino.navigatorKey,
-            home: RouterinoHome(
+            home: RouterinoHome<IndexPage>(
               builder: () => const IndexPage(),
             ),
           );

@@ -24,7 +24,6 @@ const double extraLargeFontSize = 24.0;
 const double appLogoSize = 80;
 const double dialogLogoSize = 40;
 
-
 const double normalButtonWidth = 300;
 const double normalButtonHeight = 40;
 

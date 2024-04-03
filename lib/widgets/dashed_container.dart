@@ -2,25 +2,24 @@ import 'package:flutter/material.dart';
 import 'dart:math' as math;
 
 class DashedContainer extends Container {
-  DashedContainer({
-    super.key,
-    super.alignment,
-    super.padding,
-    super.color,
-    super.decoration,
-    super.foregroundDecoration,
-    super.width,
-    super.height,
-    super.constraints,
-    super.margin,
-    super.transform,
-    super.transformAlignment,
-    super.child,
-    super.clipBehavior = Clip.none,
-    this.strokeWidth = 1.0,
-    this.gap = 5.0,
-    this.borderColor = Colors.grey
-  });
+  DashedContainer(
+      {super.key,
+      super.alignment,
+      super.padding,
+      super.color,
+      super.decoration,
+      super.foregroundDecoration,
+      super.width,
+      super.height,
+      super.constraints,
+      super.margin,
+      super.transform,
+      super.transformAlignment,
+      super.child,
+      super.clipBehavior = Clip.none,
+      this.strokeWidth = 1.0,
+      this.gap = 5.0,
+      this.borderColor = Colors.grey});
 
   final double strokeWidth;
   final double gap;
@@ -41,7 +40,6 @@ class DashedContainer extends Container {
 }
 
 class DashedPainter extends CustomPainter {
-
   double strokeWidth;
   Color color;
   double gap;

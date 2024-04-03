@@ -73,7 +73,4 @@ final lightTheme = ThemeData(
   colorScheme: lightColorScheme,
 );
 
-final darkTheme = ThemeData(
-  colorScheme: darkColorScheme,
-  useMaterial3: true
-);
+final darkTheme = ThemeData(colorScheme: darkColorScheme, useMaterial3: true);

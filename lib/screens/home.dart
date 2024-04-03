@@ -1,4 +1,5 @@
 import 'dart:io';
+import 'dart:async';
 
 import 'package:desktop_drop/desktop_drop.dart';
 import 'package:exif_helper/extensions/platform_extension.dart';
@@ -14,7 +15,9 @@ import 'package:path/path.dart' as path;
 import '../common/constant.dart';
 import '../models/exif.dart';
 
-enum _Menu { search, clear, reset }
+enum _Menu { clear, reset }
+
+typedef FetchImageFunc = Future<image.Image?> Function(String);
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
@@ -27,10 +30,22 @@ class _HomePageState extends State<HomePage> {
   final ScrollController _scrollController = ScrollController();
   final List<String> _allowedExtensions = ["jpg", "jpeg", "tif", "tiff"];
   final double fileIconSize = 64.0;
+
   String _imagePath = "";
   image.Image? _image;
   bool _isDragging = false;
+
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
+
+  final FocusNode _searchFocusNode = FocusNode();
+  final TextEditingController _searchController = TextEditingController();
+  bool _showSearch = false;
+  Future<image.Image?>? _imageData;
+
+  @override
+  void initState() {
+    super.initState();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -42,18 +57,38 @@ class _HomePageState extends State<HomePage> {
             SliverAppBar(
               title: Text(AppLocalizations.of(context)!.home),
               actions: [
+                AnimatedContainer(
+                  width: _showSearch ? 200 : 0,
+                  height: 40,
+                  duration: const Duration(milliseconds: 100),
+                  child: TextField(
+                    focusNode: _searchFocusNode,
+                    controller: _searchController,
+                    onEditingComplete: _searchExif,
+                    decoration: InputDecoration(
+                      border: const UnderlineInputBorder(),
+                      hintText: AppLocalizations.of(context)!.searchExif,
+                      suffixIcon:
+                          _searchController.text.isNotEmpty && _showSearch
+                              ? IconButton(
+                                  onPressed: () {
+                                    _searchController.clear();
+                                  },
+                                  icon: const Icon(Icons.clear_outlined),
+                                )
+                              : null,
+                    ),
+                  ),
+                ),
+                IconButton(
+                  onPressed: _searchExif,
+                  icon: const Icon(Icons.search_outlined),
+                ),
                 PopupMenuButton<_Menu>(
                   icon: const Icon(Icons.more_vert),
                   onSelected: _menuSelected,
                   itemBuilder: (BuildContext context) =>
                       <PopupMenuEntry<_Menu>>[
-                    PopupMenuItem<_Menu>(
-                      value: _Menu.search,
-                      child: ListTile(
-                        leading: const Icon(Icons.search_outlined),
-                        title: Text(AppLocalizations.of(context)!.searchExif),
-                      ),
-                    ),
                     PopupMenuItem<_Menu>(
                       value: _Menu.reset,
                       child: ListTile(
@@ -108,36 +143,33 @@ class _HomePageState extends State<HomePage> {
             ),
             _imagePath.isEmpty
                 ? SliverFillRemaining(
-                    child: Center(
-                      child: Column(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          Text(AppLocalizations.of(context)!
-                              .supportImageFormatBelow),
-                          const SizedBox(
-                            height: normalMargin,
-                          ),
-                          Row(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: [
-                              for (var extension in _allowedExtensions)
-                                Padding(
-                                  padding:
-                                      const EdgeInsets.all(normalPadding / 2),
-                                  child: SvgPicture.asset(
-                                    "assets/images/$extension.svg",
-                                    width: fileIconSize,
-                                    height: fileIconSize,
-                                  ),
+                    hasScrollBody: false,
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Text(AppLocalizations.of(context)!
+                            .supportImageFormatBelow),
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            for (var extension in _allowedExtensions)
+                              Padding(
+                                padding:
+                                    const EdgeInsets.all(normalPadding / 2),
+                                child: SvgPicture.asset(
+                                  "assets/images/$extension.svg",
+                                  width: fileIconSize,
+                                  height: fileIconSize,
                                 ),
-                            ],
-                          ),
-                        ],
-                      ),
+                              ),
+                          ],
+                        ),
+                      ],
                     ),
                   )
                 : FutureBuilder(
-                    future: _fetchExifData(),
+                    future: _imageData,
                     builder: (context, snapshot) {
                       return snapshot.connectionState == ConnectionState.done
                           ? (() {
@@ -145,6 +177,7 @@ class _HomePageState extends State<HomePage> {
                               _image = img;
                               return img == null
                                   ? SliverFillRemaining(
+                                      hasScrollBody: false,
                                       child: Center(
                                         child: Text(
                                             AppLocalizations.of(context)!
@@ -161,12 +194,6 @@ class _HomePageState extends State<HomePage> {
                             );
                     },
                   ),
-            const SliverToBoxAdapter(
-              child: SizedBox(
-                width: double.infinity,
-                height: 80,
-              ),
-            ),
           ],
         ),
         if (_imagePath.isNotEmpty)
@@ -272,26 +299,31 @@ class _HomePageState extends State<HomePage> {
       child: SliverList.separated(
         itemBuilder: (BuildContext context, int index) {
           ExifModel exifModel = exifModels[index];
-          return Card(
-            margin: const EdgeInsets.symmetric(
-              horizontal: normalMargin,
-            ),
-            child: Padding(
-              padding: const EdgeInsets.all(normalPadding),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    exifModel.tag.toUpperCase(),
-                    style: const TextStyle(
-                      fontWeight: FontWeight.bold,
+          return Container(
+            margin: index == exifModels.length - 1
+                ? const EdgeInsets.only(bottom: 80)
+                : EdgeInsets.zero,
+            child: Card(
+              margin: const EdgeInsets.symmetric(
+                horizontal: normalMargin,
+              ),
+              child: Padding(
+                padding: const EdgeInsets.all(normalPadding),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      exifModel.tag.toUpperCase(),
+                      style: const TextStyle(
+                        fontWeight: FontWeight.bold,
+                      ),
                     ),
-                  ),
-                  for (final info in exifModel.info)
-                    Column(
-                      children: _buildExifInfo(info, exifModel),
-                    )
-                ],
+                    for (final info in exifModel.info)
+                      Column(
+                        children: _buildExifInfo(info, exifModel),
+                      )
+                  ],
+                ),
               ),
             ),
           );
@@ -309,6 +341,8 @@ class _HomePageState extends State<HomePage> {
   List<Widget> _buildExifInfo(
       Map<String, image.IfdValue?> info, ExifModel exifModel) {
     return info.keys
+        .where((element) => element
+            .contains(RegExp(_searchController.text, caseSensitive: false)))
         .map((key) => Padding(
               padding: const EdgeInsets.symmetric(vertical: normalPadding),
               child: Row(
@@ -341,9 +375,6 @@ class _HomePageState extends State<HomePage> {
 
   void _menuSelected(_Menu item) {
     switch (item) {
-      case _Menu.search:
-        _searchExif();
-        break;
       case _Menu.reset:
         _resetExif();
         break;
@@ -353,7 +384,26 @@ class _HomePageState extends State<HomePage> {
     }
   }
 
-  void _searchExif() {}
+  Future<image.Image?> _fetchExifData(String path) {
+    return compute((path) {
+      return path.isEmpty
+          ? null
+          : image.decodeImageFile(path).then((value) => value);
+    }, path);
+  }
+
+  void _searchExif() {
+    setState(() {
+      if (!_showSearch) {
+        _showSearch = true;
+      } else if (_searchController.text.isEmpty) {
+        _showSearch = false;
+      }
+      _showSearch
+          ? _searchFocusNode.requestFocus()
+          : _searchFocusNode.unfocus();
+    });
+  }
 
   void _resetExif() {
     _formKey.currentState?.reset();
@@ -373,31 +423,30 @@ class _HomePageState extends State<HomePage> {
       allowMultiple: false,
     );
     if (result != null) {
-      setState(() {
-        _imagePath = result.files.single.path!;
-      });
+      _setImagePath(result.files.single.path!);
     }
   }
 
   void _onDragDone(BuildContext context, DropDoneDetails detail) {
     setState(() {
-      if (detail.files.isNotEmpty) {
-        String filePath = detail.files.first.path;
-        String extension = path.extension(filePath).substring(1).toLowerCase();
-        if (_allowedExtensions.contains(extension)) {
-          _imagePath = detail.files.first.path;
-        } else {
-          _showTips(AppLocalizations.of(context)!.invalidImageType);
-        }
-      }
       _isDragging = false;
     });
+    if (detail.files.isNotEmpty) {
+      String filePath = detail.files.first.path;
+      String extension = path.extension(filePath).substring(1).toLowerCase();
+      if (_allowedExtensions.contains(extension)) {
+        _setImagePath(detail.files.first.path);
+      } else {
+        _showTips(AppLocalizations.of(context)!.invalidImageType);
+      }
+    }
   }
 
-  Future<image.Image?> _fetchExifData() {
-    return compute((path) {
-      return image.decodeImageFile(path).then((value) => value);
-    }, _imagePath);
+  void _setImagePath(String path) {
+    setState(() {
+      _imagePath = path;
+    });
+    _imageData = _fetchExifData(_imagePath);
   }
 
   String _getSubTagName(String subName, int tag) {
@@ -482,21 +531,21 @@ class _HomePageState extends State<HomePage> {
       case const (image.IfdValueShort):
       case const (image.IfdValueLong):
       case const (image.IfdValueSByte):
-      case  const (image.IfdValueSShort):
+      case const (image.IfdValueSShort):
       case const (image.IfdValueSLong):
         ifdValue.setInt(int.parse(value), index);
         break;
       case const (image.IfdValueSingle):
-      case const  (image.IfdValueDouble):
+      case const (image.IfdValueDouble):
         ifdValue.setDouble(double.parse(value), index);
         break;
-      case const  (image.IfdValueRational):
-      case  const (image.IfdValueSRational):
+      case const (image.IfdValueRational):
+      case const (image.IfdValueSRational):
         int numerator = int.parse(value.split("/")[0]);
         int denominator = int.parse(value.split("/")[1]);
         ifdValue.setRational(numerator, denominator, index);
         break;
-      case  const (image.IfdValueAscii):
+      case const (image.IfdValueAscii):
         ifdValue.setString(value);
         break;
       default:
