@@ -1,9 +1,11 @@
+import 'dart:collection';
 import 'dart:io';
 import 'dart:async';
 
-import 'package:desktop_drop/desktop_drop.dart';
 import 'package:exif_helper/extensions/platform_extension.dart';
 import 'package:exif_helper/widgets/dashed_container.dart';
+import 'package:exif_helper/widgets/desktop_image_panel.dart';
+import 'package:exif_helper/widgets/image_panel.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
@@ -36,7 +38,6 @@ class _HomePageState extends State<HomePage> {
   bool _isDragging = false;
 
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
-
   final FocusNode _searchFocusNode = FocusNode();
   final TextEditingController _searchController = TextEditingController();
   bool _showSearch = false;
@@ -119,24 +120,7 @@ class _HomePageState extends State<HomePage> {
                     color: _isDragging
                         ? Colors.red.withOpacity(0.2)
                         : Colors.grey.withOpacity(0.2),
-                    child: PlatformExtension.isDesktop
-                        ? DropTarget(
-                            onDragDone: (detail) {
-                              _onDragDone(context, detail);
-                            },
-                            onDragEntered: (detail) {
-                              setState(() {
-                                _isDragging = true;
-                              });
-                            },
-                            onDragExited: (detail) {
-                              setState(() {
-                                _isDragging = false;
-                              });
-                            },
-                            child: _buildImagePanel(),
-                          )
-                        : _buildImagePanel(),
+                    child: ImagePanel(imagePath: _imagePath),
                   ),
                 ),
               ),
@@ -174,7 +158,7 @@ class _HomePageState extends State<HomePage> {
                       return snapshot.connectionState == ConnectionState.done
                           ? (() {
                               image.Image? img = snapshot.data;
-                              _image = img;
+                              _image = img?.clone();
                               return img == null
                                   ? SliverFillRemaining(
                                       hasScrollBody: false,
@@ -239,30 +223,6 @@ class _HomePageState extends State<HomePage> {
           ),
       ],
     );
-  }
-
-  Widget _buildImagePanel() {
-    return _imagePath.isEmpty
-        ? Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              SvgPicture.asset(
-                width: 64.0,
-                "assets/images/upload.svg",
-                colorFilter: ColorFilter.mode(
-                    Theme.of(context).colorScheme.secondary, BlendMode.srcIn),
-              ),
-              const SizedBox(
-                height: normalMargin,
-              ),
-              Text(
-                  "${AppLocalizations.of(context)!.selectImage}${PlatformExtension.isDesktop ? AppLocalizations.of(context)!.dragImage : ""}")
-            ],
-          )
-        : Image.file(
-            File(_imagePath),
-            fit: BoxFit.contain,
-          );
   }
 
   Widget _buildExifData(image.ExifData directories) {
@@ -424,21 +384,6 @@ class _HomePageState extends State<HomePage> {
     );
     if (result != null) {
       _setImagePath(result.files.single.path!);
-    }
-  }
-
-  void _onDragDone(BuildContext context, DropDoneDetails detail) {
-    setState(() {
-      _isDragging = false;
-    });
-    if (detail.files.isNotEmpty) {
-      String filePath = detail.files.first.path;
-      String extension = path.extension(filePath).substring(1).toLowerCase();
-      if (_allowedExtensions.contains(extension)) {
-        _setImagePath(detail.files.first.path);
-      } else {
-        _showTips(AppLocalizations.of(context)!.invalidImageType);
-      }
     }
   }
 
