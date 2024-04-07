@@ -23,7 +23,7 @@
     </queries>
 
     <application
-        android:label="exif_helper"
+        android:label="@string/application_name"
         android:name="${applicationName}"
         android:icon="@mipmap/ic_launcher">
         <activity
