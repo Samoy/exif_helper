@@ -5,7 +5,7 @@
   "ok": "Ok",
   "cancel": "Cancel",
   "exifConfirm": "Are you sure you want to exit?",
-  "home": "Exif",
+  "exif": "EXIF",
   "settings": "Settings",
   "theme": "Theme",
   "systemValue": "{value, select, light{Light}  dark{Dark} zh{简体中文} en{English} other{System}}",
@@ -34,5 +34,5 @@
   "noExifData": "No Exif Data",
   "save": "Save",
   "saveImage": "Save Image",
-  "saveImageInfo": "Image Exif has been modified, do you want to save it?"
+  "saveImageInfo": "This application does not validate whether the EXIF values you enter are valid. Please ensure that you understand the function of each value, as failure to do so may result in the image not displaying properly."
 }

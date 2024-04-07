@@ -5,7 +5,7 @@
   "ok": "确定",
   "cancel": "取消",
   "exifConfirm": "确定要退出吗？",
-  "home": "Exif",
+  "exif": "EXIF",
   "settings": "设置",
   "theme": "主题",
   "systemValue": "{value, select, light{浅色} dark{深色} zh{简体中文} en{English} other{跟随系统}}",
@@ -36,5 +36,5 @@
   "noExifData": "无Exif数据",
   "save": "保存",
   "saveImage": "保存图片",
-  "saveImageInfo": "Exif信息已被修改，是否保存修改后的图片？"
+  "saveImageInfo": "本应用不会校验您填写的EXIF值是否合法，请确保您了解每个值的作用，否则可能会导致图片无法正常显示。"
 }

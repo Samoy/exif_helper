@@ -1,6 +1,5 @@
 import 'package:exif_helper/common/constant.dart';
 import 'package:exif_helper/screens/home.dart';
-import 'package:exif_helper/screens/history.dart';
 import 'package:exif_helper/screens/settings.dart';
 import 'package:flutter/material.dart';
 import 'package:window_manager/window_manager.dart';
@@ -39,15 +38,9 @@ class _IndexPageState extends State<IndexPage> with WindowListener {
     _destinations = [
       _ScaffoldDestination(
         icon: Icons.image_outlined,
-        label: AppLocalizations.of(context)!.home,
+        label: AppLocalizations.of(context)!.exif,
         page: const HomePage(),
         selectedIcon: Icons.image,
-      ),
-      _ScaffoldDestination(
-        icon: Icons.history_outlined,
-        label: AppLocalizations.of(context)!.history,
-        page: const HistoryPage(),
-        selectedIcon: Icons.history,
       ),
       _ScaffoldDestination(
         icon: Icons.settings_outlined,
@@ -66,17 +59,22 @@ class _IndexPageState extends State<IndexPage> with WindowListener {
 
   @override
   Widget build(BuildContext context) {
+    final Widget body = IndexedStack(
+      index: _selectedIndex,
+      children: _destinations.map((item) => item.page).toList(),
+    );
+    print("呵呵:$body");
     return OrientationBuilder(
         builder: (BuildContext context, Orientation orientation) {
       if (orientation == Orientation.landscape) {
-        return _buildLandscape();
+        return _buildLandscape(body);
       }
-      return _buildPortrait();
+      return _buildPortrait(body);
     });
   }
 
   // 构建横屏
-  Scaffold _buildLandscape() {
+  Scaffold _buildLandscape(Widget body) {
     return Scaffold(
       body: SafeArea(
         child: Row(
@@ -107,10 +105,7 @@ class _IndexPageState extends State<IndexPage> with WindowListener {
             ),
             const VerticalDivider(thickness: 1, width: 1),
             Expanded(
-              child: IndexedStack(
-                index: _selectedIndex,
-                children: _destinations.map((item) => item.page).toList(),
-              ),
+              child: body,
             ),
           ],
         ),
@@ -119,7 +114,7 @@ class _IndexPageState extends State<IndexPage> with WindowListener {
   }
 
   // 构建竖屏
-  Scaffold _buildPortrait() {
+  Scaffold _buildPortrait(Widget body) {
     return Scaffold(
       bottomNavigationBar: NavigationBar(
         onDestinationSelected: (int index) {
@@ -135,7 +130,7 @@ class _IndexPageState extends State<IndexPage> with WindowListener {
                 ))
             .toList(),
       ),
-      body: _destinations[_selectedIndex].page,
+      body: body,
     );
   }
 

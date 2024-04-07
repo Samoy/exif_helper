@@ -1,5 +1,3 @@
-import 'dart:collection';
-import 'dart:io';
 import 'dart:async';
 
 import 'package:exif_helper/extensions/platform_extension.dart';
@@ -32,6 +30,7 @@ class _HomePageState extends State<HomePage> {
   final ScrollController _scrollController = ScrollController();
   final List<String> _allowedExtensions = ["jpg", "jpeg", "tif", "tiff"];
   final double fileIconSize = 64.0;
+  String _query = "";
 
   String _imagePath = "";
   image.Image? _image;
@@ -44,11 +43,6 @@ class _HomePageState extends State<HomePage> {
   Future<image.Image?>? _imageData;
 
   @override
-  void initState() {
-    super.initState();
-  }
-
-  @override
   Widget build(BuildContext context) {
     return Stack(
       children: [
@@ -56,7 +50,7 @@ class _HomePageState extends State<HomePage> {
           controller: _scrollController,
           slivers: [
             SliverAppBar(
-              title: Text(AppLocalizations.of(context)!.home),
+              title: Text(AppLocalizations.of(context)!.exifInfo),
               actions: [
                 AnimatedContainer(
                   width: _showSearch ? 200 : 0,
@@ -65,20 +59,27 @@ class _HomePageState extends State<HomePage> {
                   child: TextField(
                     focusNode: _searchFocusNode,
                     controller: _searchController,
-                    onEditingComplete: _searchExif,
                     decoration: InputDecoration(
                       border: const UnderlineInputBorder(),
                       hintText: AppLocalizations.of(context)!.searchExif,
-                      suffixIcon:
-                          _searchController.text.isNotEmpty && _showSearch
-                              ? IconButton(
-                                  onPressed: () {
-                                    _searchController.clear();
-                                  },
-                                  icon: const Icon(Icons.clear_outlined),
-                                )
-                              : null,
+                      suffixIcon: _query.isNotEmpty && _showSearch
+                          ? IconButton(
+                              onPressed: () {
+                                _searchController.clear();
+                                setState(() {
+                                  _query = "";
+                                });
+                              },
+                              icon: const Icon(Icons.clear_outlined),
+                            )
+                          : null,
                     ),
+                    onEditingComplete: _searchExif,
+                    onChanged: (text) {
+                      setState(() {
+                        _query = text;
+                      });
+                    },
                   ),
                 ),
                 IconButton(
@@ -120,7 +121,29 @@ class _HomePageState extends State<HomePage> {
                     color: _isDragging
                         ? Colors.red.withOpacity(0.2)
                         : Colors.grey.withOpacity(0.2),
-                    child: ImagePanel(imagePath: _imagePath),
+                    child: PlatformExtension.isDesktop
+                        ? DesktopImagePanel(
+                            imagePath: _imagePath,
+                            onDragEntered: (detail) {
+                              setState(() {
+                                _isDragging = true;
+                              });
+                            },
+                            onDragExited: (detail) {
+                              setState(() {
+                                _isDragging = false;
+                              });
+                            },
+                            onDragDone: (path) {
+                              setState(() {
+                                _isDragging = false;
+                              });
+                              if (path != null) {
+                                _setImagePath(path);
+                              }
+                            },
+                          )
+                        : ImagePanel(imagePath: _imagePath),
                   ),
                 ),
               ),
@@ -134,6 +157,9 @@ class _HomePageState extends State<HomePage> {
                       children: [
                         Text(AppLocalizations.of(context)!
                             .supportImageFormatBelow),
+                        const SizedBox(
+                          height: smallMargin,
+                        ),
                         Row(
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: [
@@ -187,7 +213,6 @@ class _HomePageState extends State<HomePage> {
               padding: const EdgeInsets.all(normalPadding),
               child: SizedBox(
                 width: normalButtonWidth,
-                height: normalButtonHeight,
                 child: FilledButton(
                   child: Text(AppLocalizations.of(context)!.save),
                   onPressed: () {
@@ -196,8 +221,13 @@ class _HomePageState extends State<HomePage> {
                       builder: (context) {
                         return AlertDialog(
                           title: Text(AppLocalizations.of(context)!.saveImage),
-                          content:
-                              Text(AppLocalizations.of(context)!.saveImageInfo),
+                          content: ConstrainedBox(
+                            constraints: const BoxConstraints(
+                              maxWidth: normalButtonWidth,
+                            ),
+                            child: Text(
+                                AppLocalizations.of(context)!.saveImageInfo),
+                          ),
                           actions: [
                             TextButton(
                               child: Text(AppLocalizations.of(context)!.cancel),
@@ -301,8 +331,8 @@ class _HomePageState extends State<HomePage> {
   List<Widget> _buildExifInfo(
       Map<String, image.IfdValue?> info, ExifModel exifModel) {
     return info.keys
-        .where((element) => element
-            .contains(RegExp(_searchController.text, caseSensitive: false)))
+        .where(
+            (element) => element.contains(RegExp(_query, caseSensitive: false)))
         .map((key) => Padding(
               padding: const EdgeInsets.symmetric(vertical: normalPadding),
               child: Row(
@@ -356,7 +386,7 @@ class _HomePageState extends State<HomePage> {
     setState(() {
       if (!_showSearch) {
         _showSearch = true;
-      } else if (_searchController.text.isEmpty) {
+      } else if (_query.isEmpty) {
         _showSearch = false;
       }
       _showSearch
