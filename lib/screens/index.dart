@@ -1,7 +1,10 @@
 import 'package:exif_helper/common/constant.dart';
+import 'package:exif_helper/models/exif.dart';
 import 'package:exif_helper/screens/home.dart';
 import 'package:exif_helper/screens/settings.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import 'package:window_manager/window_manager.dart';
 
 import '../extensions/platform_extension.dart';
@@ -59,21 +62,21 @@ class _IndexPageState extends State<IndexPage> with WindowListener {
 
   @override
   Widget build(BuildContext context) {
-    final Widget body = IndexedStack(
-      index: _selectedIndex,
-      children: _destinations.map((item) => item.page).toList(),
-    );
-    return OrientationBuilder(
+    return ChangeNotifierProvider(
+      create: (context) => ExifModel(),
+      child: OrientationBuilder(
         builder: (BuildContext context, Orientation orientation) {
-      if (orientation == Orientation.landscape) {
-        return _buildLandscape(body);
-      }
-      return _buildPortrait(body);
-    });
+          if (orientation == Orientation.landscape) {
+            return _buildLandscape();
+          }
+          return _buildPortrait();
+        },
+      ),
+    );
   }
 
   // 构建横屏
-  Scaffold _buildLandscape(Widget body) {
+  Scaffold _buildLandscape() {
     return Scaffold(
       body: SafeArea(
         child: Row(
@@ -106,7 +109,7 @@ class _IndexPageState extends State<IndexPage> with WindowListener {
             ),
             const VerticalDivider(thickness: 1, width: 1),
             Expanded(
-              child: body,
+              child: _buildBody(),
             ),
           ],
         ),
@@ -115,7 +118,7 @@ class _IndexPageState extends State<IndexPage> with WindowListener {
   }
 
   // 构建竖屏
-  Scaffold _buildPortrait(Widget body) {
+  Scaffold _buildPortrait() {
     return Scaffold(
       bottomNavigationBar: NavigationBar(
         onDestinationSelected: (int index) {
@@ -131,7 +134,14 @@ class _IndexPageState extends State<IndexPage> with WindowListener {
                 ))
             .toList(),
       ),
-      body: body,
+      body: _buildBody(),
+    );
+  }
+
+  Widget _buildBody() {
+    return IndexedStack(
+      index: _selectedIndex,
+      children: _destinations.map((item) => item.page).toList(),
     );
   }
 

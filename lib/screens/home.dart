@@ -11,6 +11,7 @@ import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:image/image.dart' as image;
 import 'package:path/path.dart' as path;
+import 'package:provider/provider.dart';
 
 import '../common/constant.dart';
 import '../models/exif.dart';
@@ -33,7 +34,6 @@ class _HomePageState extends State<HomePage> {
   String _query = "";
 
   String _imagePath = "";
-  image.Image? _image;
   bool _isDragging = false;
 
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
@@ -44,251 +44,233 @@ class _HomePageState extends State<HomePage> {
 
   @override
   Widget build(BuildContext context) {
-    return Stack(
-      children: [
-        CustomScrollView(
-          controller: _scrollController,
-          slivers: [
-            SliverAppBar(
-              title: Text(AppLocalizations.of(context)!.exifInfo),
-              actions: [
-                AnimatedContainer(
-                  width: _showSearch ? 200 : 0,
-                  height: 40,
-                  duration: const Duration(milliseconds: 100),
-                  child: TextField(
-                    focusNode: _searchFocusNode,
-                    controller: _searchController,
-                    decoration: InputDecoration(
-                      border: const UnderlineInputBorder(),
-                      hintText: AppLocalizations.of(context)!.searchExif,
-                      suffixIcon: _query.isNotEmpty && _showSearch
-                          ? IconButton(
-                              onPressed: () {
-                                _searchController.clear();
-                                setState(() {
-                                  _query = "";
-                                });
-                              },
-                              icon: const Icon(Icons.clear_outlined),
-                            )
-                          : null,
-                    ),
-                    onEditingComplete: _searchExif,
-                    onChanged: (text) {
-                      setState(() {
-                        _query = text;
-                      });
-                    },
-                  ),
-                ),
-                IconButton(
-                  onPressed: _searchExif,
-                  icon: const Icon(Icons.search_outlined),
-                ),
-                PopupMenuButton<_Menu>(
-                  icon: const Icon(Icons.more_vert),
-                  onSelected: _menuSelected,
-                  itemBuilder: (BuildContext context) =>
-                      <PopupMenuEntry<_Menu>>[
-                    PopupMenuItem<_Menu>(
-                      value: _Menu.reset,
-                      child: ListTile(
-                        leading: const Icon(Icons.refresh_outlined),
-                        title: Text(AppLocalizations.of(context)!.resetExif),
-                      ),
-                    ),
-                    PopupMenuItem<_Menu>(
-                      value: _Menu.clear,
-                      child: ListTile(
-                        leading: const Icon(Icons.clear_all_outlined),
-                        title: Text(AppLocalizations.of(context)!.clearImage),
-                      ),
-                    ),
-                  ],
-                ),
-              ],
-              pinned: true,
-            ),
-            SliverToBoxAdapter(
-              child: Padding(
-                padding: const EdgeInsets.all(normalPadding),
-                child: InkWell(
-                  onTap: _selectImage,
-                  child: DashedContainer(
-                    width: double.infinity,
-                    height: 300,
-                    color: _isDragging
-                        ? Colors.red.withOpacity(0.2)
-                        : Colors.grey.withOpacity(0.2),
-                    child: PlatformExtension.isDesktop
-                        ? DesktopImagePanel(
-                            imagePath: _imagePath,
-                            onDragEntered: (detail) {
+    return Consumer<ExifModel>(
+      builder: (context, exifModel, child) {
+        return Stack(
+          children: [
+            CustomScrollView(
+              controller: _scrollController,
+              slivers: [
+                SliverAppBar(
+                  title: Text(AppLocalizations.of(context)!.exifInfo),
+                  actions: [
+                    AnimatedContainer(
+                      width: _showSearch ? 200 : 0,
+                      height: 40,
+                      duration: const Duration(milliseconds: 100),
+                      child: TextField(
+                        focusNode: _searchFocusNode,
+                        controller: _searchController,
+                        decoration: InputDecoration(
+                          border: const UnderlineInputBorder(),
+                          hintText: AppLocalizations.of(context)!.searchExif,
+                          suffixIcon: _query.isNotEmpty && _showSearch
+                              ? IconButton(
+                            onPressed: () {
+                              _searchController.clear();
                               setState(() {
-                                _isDragging = true;
+                                _query = "";
                               });
                             },
-                            onDragExited: (detail) {
-                              setState(() {
-                                _isDragging = false;
-                              });
-                            },
-                            onDragDone: (path) {
-                              setState(() {
-                                _isDragging = false;
-                              });
-                              if (path != null) {
-                                _setImagePath(path);
-                              }
-                            },
+                            icon: const Icon(Icons.clear_outlined),
                           )
-                        : ImagePanel(imagePath: _imagePath),
-                  ),
-                ),
-              ),
-            ),
-            _imagePath.isEmpty
-                ? SliverFillRemaining(
-                    hasScrollBody: false,
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.center,
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        Text(AppLocalizations.of(context)!
-                            .supportImageFormatBelow),
-                        const SizedBox(
-                          height: smallMargin,
+                              : null,
                         ),
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            for (var extension in _allowedExtensions)
-                              Padding(
-                                padding:
-                                    const EdgeInsets.all(normalPadding / 2),
-                                child: SvgPicture.asset(
-                                  "assets/images/$extension.svg",
-                                  width: fileIconSize,
-                                  height: fileIconSize,
-                                ),
-                              ),
-                          ],
+                        onEditingComplete: _searchExif,
+                        onChanged: (text) {
+                          setState(() {
+                            _query = text;
+                          });
+                        },
+                      ),
+                    ),
+                    IconButton(
+                      onPressed: _searchExif,
+                      icon: const Icon(Icons.search_outlined),
+                    ),
+                    PopupMenuButton<_Menu>(
+                      icon: const Icon(Icons.more_vert),
+                      onSelected: _menuSelected,
+                      itemBuilder: (BuildContext context) =>
+                      <PopupMenuEntry<_Menu>>[
+                        PopupMenuItem<_Menu>(
+                          value: _Menu.reset,
+                          child: ListTile(
+                            leading: const Icon(Icons.refresh_outlined),
+                            title:
+                            Text(AppLocalizations.of(context)!.resetExif),
+                          ),
+                        ),
+                        PopupMenuItem<_Menu>(
+                          value: _Menu.clear,
+                          child: ListTile(
+                            leading: const Icon(Icons.clear_all_outlined),
+                            title: Text(
+                                AppLocalizations.of(context)!.clearImage),
+                          ),
                         ),
                       ],
                     ),
-                  )
-                : FutureBuilder(
-                    future: _imageData,
-                    builder: (context, snapshot) {
-                      return snapshot.connectionState == ConnectionState.done
-                          ? (() {
-                              image.Image? img = snapshot.data;
-                              _image = img?.clone();
-                              return img == null
-                                  ? SliverFillRemaining(
-                                      hasScrollBody: false,
-                                      child: Center(
-                                        child: Text(
-                                            AppLocalizations.of(context)!
-                                                .noExifData),
-                                      ),
-                                    )
-                                  : _buildExifData(img.exif);
-                            }())
-                          : const SliverFillRemaining(
-                              hasScrollBody: false,
-                              child: Center(
-                                child: CircularProgressIndicator(),
-                              ),
-                            );
-                    },
+                  ],
+                  pinned: true,
+                ),
+                SliverToBoxAdapter(
+                  child: Padding(
+                    padding: const EdgeInsets.all(normalPadding),
+                    child: InkWell(
+                      onTap: _selectImage,
+                      child: DashedContainer(
+                        width: double.infinity,
+                        height: 300,
+                        color: _isDragging
+                            ? Colors.red.withOpacity(0.2)
+                            : Colors.grey.withOpacity(0.2),
+                        child: PlatformExtension.isDesktop
+                            ? DesktopImagePanel(
+                          imagePath: _imagePath,
+                          onDragEntered: (detail) {
+                            setState(() {
+                              _isDragging = true;
+                            });
+                          },
+                          onDragExited: (detail) {
+                            setState(() {
+                              _isDragging = false;
+                            });
+                          },
+                          onDragDone: (path) {
+                            setState(() {
+                              _isDragging = false;
+                            });
+                            if (path != null) {
+                              _setImagePath(path);
+                            }
+                          },
+                        )
+                            : ImagePanel(imagePath: _imagePath),
+                      ),
+                    ),
                   ),
-          ],
-        ),
-        if (_imagePath.isNotEmpty)
-          Align(
-            alignment: Alignment.bottomCenter,
-            child: Padding(
-              padding: const EdgeInsets.all(normalPadding),
-              child: SizedBox(
-                width: normalButtonWidth,
-                child: FilledButton(
-                  child: Text(AppLocalizations.of(context)!.save),
-                  onPressed: () {
-                    showDialog(
-                      context: context,
-                      builder: (context) {
-                        return AlertDialog(
-                          title: Text(AppLocalizations.of(context)!.saveImage),
-                          content: ConstrainedBox(
-                            constraints: const BoxConstraints(
-                              maxWidth: normalButtonWidth,
+                ),
+                _imagePath.isEmpty
+                    ? SliverFillRemaining(
+                  hasScrollBody: false,
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Text(AppLocalizations.of(context)!
+                          .supportImageFormatBelow),
+                      const SizedBox(
+                        height: smallMargin,
+                      ),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          for (var extension in _allowedExtensions)
+                            Padding(
+                              padding: const EdgeInsets.all(
+                                  normalPadding / 2),
+                              child: SvgPicture.asset(
+                                "assets/images/$extension.svg",
+                                width: fileIconSize,
+                                height: fileIconSize,
+                              ),
                             ),
-                            child: Text(
-                                AppLocalizations.of(context)!.saveImageInfo),
-                          ),
-                          actions: [
-                            TextButton(
-                              child: Text(AppLocalizations.of(context)!.cancel),
-                              onPressed: () {
-                                Navigator.of(context).pop();
-                              },
-                            ),
-                            FilledButton(
-                              child: Text(AppLocalizations.of(context)!.ok),
-                              onPressed: () {
-                                Navigator.of(context).pop();
-                                _saveExifData();
-                              },
-                            ),
-                          ],
-                        );
-                      },
+                        ],
+                      ),
+                    ],
+                  ),
+                )
+                    : FutureBuilder(
+                  future: _imageData,
+                  builder: (context, snapshot) {
+                    return snapshot.connectionState ==
+                        ConnectionState.done
+                        ? (() {
+                      image.Image? img = snapshot.data;
+                      exifModel.setImage(_imagePath);
+                      return img == null
+                          ? SliverFillRemaining(
+                        hasScrollBody: false,
+                        child: Center(
+                          child: Text(
+                              AppLocalizations.of(context)!
+                                  .noExifData),
+                        ),
+                      )
+                          : _buildExifData(
+                          exifModel.exifItems.toList());
+                    }())
+                        : const SliverFillRemaining(
+                      hasScrollBody: false,
+                      child: Center(
+                        child: CircularProgressIndicator(),
+                      ),
                     );
                   },
                 ),
-              ),
+              ],
             ),
-          ),
-      ],
+            if (_imagePath.isNotEmpty)
+              Align(
+                alignment: Alignment.bottomCenter,
+                child: Container(
+                  padding: const EdgeInsets.all(
+                    normalPadding,
+                  ),
+                  width: normalButtonWidth,
+                  child: FilledButton(
+                    child: Text(AppLocalizations.of(context)!.save),
+                    onPressed: () {
+                      showDialog(
+                        context: context,
+                        builder: (context) {
+                          return AlertDialog(
+                            title:
+                            Text(AppLocalizations.of(context)!.saveImage),
+                            content: ConstrainedBox(
+                              constraints: const BoxConstraints(
+                                maxWidth: normalButtonWidth,
+                              ),
+                              child: Text(AppLocalizations.of(context)!
+                                  .saveImageInfo),
+                            ),
+                            actions: [
+                              TextButton(
+                                child: Text(
+                                    AppLocalizations.of(context)!.cancel),
+                                onPressed: () {
+                                  Navigator.of(context).pop();
+                                },
+                              ),
+                              FilledButton(
+                                child: Text(AppLocalizations.of(context)!.ok),
+                                onPressed: () {
+                                  Navigator.of(context).pop();
+                                  _saveExifData();
+                                },
+                              ),
+                            ],
+                          );
+                        },
+                      );
+                    },
+                  ),
+                ),
+              ),
+          ],
+        );
+      },
     );
   }
 
-  Widget _buildExifData(image.ExifData directories) {
-    final getTagName = directories.getTagName;
-    final List<ExifModel> exifModels = [];
-    for (final name in directories.keys) {
-      List<Map<String, image.IfdValue?>> info = [];
-      final directory = directories[name];
-      for (final tag in directory.keys) {
-        final value = directory[tag];
-        final tagName = getTagName(tag);
-        if (tagName != "<unknown>" &&
-            value?.type != image.IfdValueType.undefined) {
-          info.add({tagName: value});
-        }
-      }
-      exifModels.add(ExifModel(name, info));
-      for (final subName in directory.sub.keys) {
-        List<Map<String, image.IfdValue?>> subInfo = [];
-        final subDirectory = directory.sub[subName];
-        for (final tag in subDirectory.keys) {
-          final value = subDirectory[tag];
-          final subTagName = _getSubTagName(subName, tag);
-          if (subTagName != "<unknown>" &&
-              value?.type != image.IfdValueType.undefined) {
-            subInfo.add({subTagName: value});
-          }
-        }
-        exifModels.add(ExifModel(subName, subInfo));
-      }
-    }
+  Widget _buildExifData(List<ExifItem> exifModels) {
     return Form(
       key: _formKey,
       child: SliverList.separated(
         itemBuilder: (BuildContext context, int index) {
-          ExifModel exifModel = exifModels[index];
+          ExifItem exifModel = exifModels[index];
           return Container(
             margin: index == exifModels.length - 1
                 ? const EdgeInsets.only(bottom: 80)
@@ -329,7 +311,7 @@ class _HomePageState extends State<HomePage> {
   }
 
   List<Widget> _buildExifInfo(
-      Map<String, image.IfdValue?> info, ExifModel exifModel) {
+      Map<String, image.IfdValue?> info, ExifItem exifItem) {
     return info.keys
         .where(
             (element) => element.contains(RegExp(_query, caseSensitive: false)))
@@ -353,7 +335,8 @@ class _HomePageState extends State<HomePage> {
                       ),
                       initialValue: info[key]!.toString(),
                       onChanged: (value) {
-                        _changeExifValue(info, exifModel.tag, key, value);
+                        Provider.of<ExifModel>(context)
+                            .changeExifValue(info, exifItem.tag, key, value);
                       },
                     ),
                   ),
@@ -400,7 +383,7 @@ class _HomePageState extends State<HomePage> {
   }
 
   void _clearImage() {
-    _image = null;
+    Provider.of<ExifModel>(context).clearImage();
     setState(() {
       _imagePath = "";
     });
@@ -424,110 +407,6 @@ class _HomePageState extends State<HomePage> {
     _imageData = _fetchExifData(_imagePath);
   }
 
-  String _getSubTagName(String subName, int tag) {
-    switch (subName) {
-      case "gps":
-        {
-          if (!image.exifGpsTags.containsKey(tag)) {
-            return "<unknown>";
-          }
-          return image.exifGpsTags[tag]!.name;
-        }
-      case "interop":
-        {
-          if (!image.exifInteropTags.containsKey(tag)) {
-            return "<unknown>";
-          }
-          return image.exifInteropTags[tag]!.name;
-        }
-      default:
-        {
-          if (!image.exifImageTags.containsKey(tag)) {
-            return "<unknown>";
-          }
-          return image.exifImageTags[tag]!.name;
-        }
-    }
-  }
-
-  void _changeExifValue(
-      Map<String, image.IfdValue?> info, String tag, String key, String value) {
-    image.IfdValue? ifdValue = info[key]?.clone();
-    if (ifdValue != null && value.isNotEmpty) {
-      try {
-        _setIfdValue(ifdValue, key, value);
-        switch (tag) {
-          case "ifd0":
-            _image?.exif.imageIfd[key] = ifdValue;
-          case "ifd1":
-            _image?.exif.thumbnailIfd[key] = ifdValue;
-          case "exif":
-            _image?.exif.exifIfd[key] = ifdValue;
-          case "gps":
-            _image?.exif.gpsIfd[key] = ifdValue;
-          case "interop":
-            _image?.exif.interopIfd[key] = ifdValue;
-        }
-      } on FormatException catch (e) {
-        debugPrint(e.message);
-      }
-    }
-  }
-
-  _setIfdValue(image.IfdValue ifdValue, String key, String value) {
-    if (value.startsWith("[") && value.endsWith("]")) {
-      List<String> valueArray = value.substring(1, value.length - 1).split(",");
-      for (int i = 0; i < valueArray.length; i++) {
-        final item = valueArray[i].trim();
-        if (item.isNotEmpty) {
-          _setSinglesValue(
-            ifdValue: ifdValue,
-            value: item,
-            index: i,
-          );
-        }
-      }
-    } else {
-      _setSinglesValue(
-        ifdValue: ifdValue,
-        value: value,
-      );
-    }
-  }
-
-  void _setSinglesValue({
-    required image.IfdValue ifdValue,
-    required String value,
-    index = 0,
-  }) {
-    Type type = ifdValue.runtimeType;
-    switch (type) {
-      case const (image.IfdByteValue):
-      case const (image.IfdValueShort):
-      case const (image.IfdValueLong):
-      case const (image.IfdValueSByte):
-      case const (image.IfdValueSShort):
-      case const (image.IfdValueSLong):
-        ifdValue.setInt(int.parse(value), index);
-        break;
-      case const (image.IfdValueSingle):
-      case const (image.IfdValueDouble):
-        ifdValue.setDouble(double.parse(value), index);
-        break;
-      case const (image.IfdValueRational):
-      case const (image.IfdValueSRational):
-        int numerator = int.parse(value.split("/")[0]);
-        int denominator = int.parse(value.split("/")[1]);
-        ifdValue.setRational(numerator, denominator, index);
-        break;
-      case const (image.IfdValueAscii):
-        ifdValue.setString(value);
-        break;
-      default:
-        break;
-    }
-  }
-
   void _saveExifData() async {
     String extension = path.extension(_imagePath).substring(1);
     String fileName =
@@ -547,7 +426,10 @@ class _HomePageState extends State<HomePage> {
       allowedExtensions: [extension],
     ).then((path) async {
       if (path != null) {
-        image.encodeImageFile(path, _image!).then((success) {
+        image
+            .encodeImageFile(
+                path, Provider.of<ExifModel>(context, listen: false).image!)
+            .then((success) {
           _showTips(success ? "保存成功" : "保存失败");
         });
       }
@@ -558,9 +440,11 @@ class _HomePageState extends State<HomePage> {
     String lowerCaseExtension = extension.toLowerCase();
     Uint8List? bytes;
     if (lowerCaseExtension == "jpg" || lowerCaseExtension == "jpeg") {
-      bytes = image.encodeJpg(_image!);
+      bytes = image
+          .encodeJpg(Provider.of<ExifModel>(context, listen: false).image!);
     } else if (lowerCaseExtension == "tif" || lowerCaseExtension == "tiff") {
-      bytes = image.encodeTiff(_image!);
+      bytes = image
+          .encodeTiff(Provider.of<ExifModel>(context, listen: false).image!);
     } else {
       _showTips("不支持的文件格式");
     }
