@@ -28,7 +28,7 @@ class HomePage extends StatefulWidget {
 
 class _HomePageState extends State<HomePage> {
   final ScrollController _scrollController = ScrollController();
-  final List<String> _allowedExtensions = ["jpg", "jpeg", "tif", "tiff"];
+  final List<String> _allowedExtensions = ["jpg", "tif", "jpeg", "tiff"];
   final double fileIconSize = 64.0;
   String _query = "";
 

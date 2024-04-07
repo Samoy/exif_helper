@@ -63,7 +63,6 @@ class _IndexPageState extends State<IndexPage> with WindowListener {
       index: _selectedIndex,
       children: _destinations.map((item) => item.page).toList(),
     );
-    print("呵呵:$body");
     return OrientationBuilder(
         builder: (BuildContext context, Orientation orientation) {
       if (orientation == Orientation.landscape) {
@@ -88,10 +87,12 @@ class _IndexPageState extends State<IndexPage> with WindowListener {
                 });
               },
               labelType: NavigationRailLabelType.all,
-              leading: const SizedBox(
-                height: appLogoSize,
-                child: CircleAvatar(
-                  child: FlutterLogo(),
+              leading: SizedBox(
+                height: 80,
+                child: Image.asset(
+                  "assets/images/logo.png",
+                  width: appLogoSize,
+                  height: appLogoSize,
                 ),
               ),
               destinations: _destinations

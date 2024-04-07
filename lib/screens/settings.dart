@@ -126,7 +126,10 @@ class _SettingsPageState extends State<SettingsPage> {
     if (item.key == const Key("about")) {
       showAboutDialog(
         context: context,
-        applicationIcon: const FlutterLogo(),
+        applicationIcon: Image.asset(
+          "assets/images/logo.png",
+          width: dialogLogoSize,
+        ),
         applicationName: AppLocalizations.of(context)!.appTitle,
         applicationVersion: appVersion,
         applicationLegalese: "Copyright © ${DateTime.now().year}",
