@@ -1,5 +1,6 @@
 import 'package:exif_helper/common/constant.dart';
 import 'package:exif_helper/models/exif.dart';
+import 'package:exif_helper/models/search.dart';
 import 'package:exif_helper/screens/home.dart';
 import 'package:exif_helper/screens/settings.dart';
 import 'package:flutter/cupertino.dart';
@@ -62,8 +63,11 @@ class _IndexPageState extends State<IndexPage> with WindowListener {
 
   @override
   Widget build(BuildContext context) {
-    return ChangeNotifierProvider(
-      create: (context) => ExifModel(),
+    return MultiProvider(
+      providers: [
+        ChangeNotifierProvider(create: (context) => ExifModel()),
+        ChangeNotifierProvider(create: (context) => SearchModel()),
+      ],
       child: OrientationBuilder(
         builder: (BuildContext context, Orientation orientation) {
           if (orientation == Orientation.landscape) {

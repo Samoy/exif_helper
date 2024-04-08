@@ -1,33 +1,54 @@
+import 'dart:async';
 import 'dart:collection';
 
 import 'package:flutter/foundation.dart';
 import 'package:image/image.dart';
 
 class ExifModel extends ChangeNotifier {
-  Image? _image;
+  String? _path;
+  Future<Image?>? _image;
+  Image? _imageData;
 
-  Image? get image => _image;
   List<ExifItem> _exifItems = [];
 
+  String get path => _path ?? "";
+
+  Future<Image?>? get image => _image;
+
+  Image? get imageData => _imageData;
 
   UnmodifiableListView<ExifItem> get exifItems =>
       UnmodifiableListView(_exifItems);
 
-  void setImage(String path) async {
-    _image = await decodeImageFile(path);
-    genExifItems();
+  void setImagePath(String path) {
+    _path = path;
+    _image = _fetchExifData(_path!);
     notifyListeners();
   }
 
-  void clearImage() {
-    _image = null;
+  void setImageData(Image? image) {
+    if (image == null) return;
+    _imageData = image;
   }
 
-  void genExifItems() {
+  void clearImage() {
+    _path = null;
+    _image = null;
+    _exifItems.clear();
+    notifyListeners();
+  }
+
+  Future<Image?> _fetchExifData(String path) {
+    return compute((path) {
+      return path.isEmpty ? null : decodeImageFile(path).then((value) => value);
+    }, path);
+  }
+
+  void setExifItems(Image? image) {
     if (image == null) {
       return;
     }
-    final directories = image!.exif;
+    final directories = image.exif;
     final getTagName = directories.getTagName;
     List<ExifItem> items = [];
     for (final name in directories.keys) {
@@ -66,15 +87,15 @@ class ExifModel extends ChangeNotifier {
         _setIfdValue(ifdValue, key, value);
         switch (tag) {
           case "ifd0":
-            _image?.exif.imageIfd[key] = ifdValue;
+            _imageData?.exif.imageIfd[key] = ifdValue;
           case "ifd1":
-            _image?.exif.thumbnailIfd[key] = ifdValue;
+            _imageData?.exif.thumbnailIfd[key] = ifdValue;
           case "exif":
-            _image?.exif.exifIfd[key] = ifdValue;
+            _imageData?.exif.exifIfd[key] = ifdValue;
           case "gps":
-            _image?.exif.gpsIfd[key] = ifdValue;
+            _imageData?.exif.gpsIfd[key] = ifdValue;
           case "interop":
-            _image?.exif.interopIfd[key] = ifdValue;
+            _imageData?.exif.interopIfd[key] = ifdValue;
         }
         notifyListeners();
       } on FormatException catch (e) {
@@ -114,17 +135,38 @@ class ExifModel extends ChangeNotifier {
       case const (IfdValueSByte):
       case const (IfdValueSShort):
       case const (IfdValueSLong):
-        ifdValue.setInt(int.parse(value), index);
+        {
+          int? result = int.tryParse(value);
+          if (result != null) {
+            ifdValue.setInt(result, index);
+          }
+        }
         break;
       case const (IfdValueSingle):
       case const (IfdValueDouble):
-        ifdValue.setDouble(double.parse(value), index);
+        {
+          double? result = double.tryParse(value);
+          if (result != null) {
+            ifdValue.setDouble(result, index);
+          }
+        }
         break;
       case const (IfdValueRational):
       case const (IfdValueSRational):
-        int numerator = int.parse(value.split("/")[0]);
-        int denominator = int.parse(value.split("/")[1]);
-        ifdValue.setRational(numerator, denominator, index);
+        {
+          final array = value.split("/");
+          if (array.length != 2) {
+            break;
+          }
+          if (array[0].isEmpty || array[1].isEmpty) {
+            break;
+          }
+          int? numerator = int.tryParse(array[0]);
+          int? denominator = int.tryParse(array[1]);
+          if (numerator != null || denominator != null) {
+            ifdValue.setRational(numerator!, denominator!, index);
+          }
+        }
         break;
       case const (IfdValueAscii):
         ifdValue.setString(value);

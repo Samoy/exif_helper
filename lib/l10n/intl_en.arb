@@ -34,5 +34,19 @@
   "noExifData": "No Exif Data",
   "save": "Save",
   "saveImage": "Save Image",
-  "saveImageInfo": "This application does not validate whether the EXIF values you enter are valid. Please ensure that you understand the function of each value, as failure to do so may result in the image not displaying properly."
+  "saveImageInfo": "This application does not validate whether the EXIF values you enter are valid. Please ensure that you understand the function of each value, as failure to do so may result in the image not displaying properly.",
+  "saveSuccess": "Save Success",
+  "saveFailed": "Save Failed",
+  "fileCopy": "{file}-copy.{ext}",
+  "@fileCopy": {
+    "description": "A file name",
+    "placeholders": {
+      "file": {
+        "type": "String"
+      },
+      "ext": {
+        "type": "String"
+      }
+    }
+  }
 }

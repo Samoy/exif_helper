@@ -36,5 +36,19 @@
   "noExifData": "无Exif数据",
   "save": "保存",
   "saveImage": "保存图片",
-  "saveImageInfo": "本应用不会校验您填写的EXIF值是否合法，请确保您了解每个值的作用，否则可能会导致图片无法正常显示。"
+  "saveImageInfo": "本应用不会校验您填写的EXIF值是否合法，请确保您了解每个值的作用，否则可能会导致图片无法正常显示。",
+  "saveSuccess": "保存成功",
+  "saveFailed": "保存失败",
+  "fileCopy": "{file}-副本.{ext}",
+  "@fileCopy": {
+    "description": "文件名",
+    "placeholders": {
+      "file": {
+        "type": "String"
+      },
+      "ext": {
+        "type": "String"
+      }
+    }
+  }
 }
