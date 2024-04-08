@@ -1,6 +1,3 @@
-/* .vitepress/theme/custom.css */
-@import "vitepress/dist/client/theme-default/styles/vars.css";
-
 :root {
     --vp-c-brand-1: #0353DA;
     --vp-button-brand-bg: var(--vp-c-brand-1);

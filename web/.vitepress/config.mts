@@ -3,8 +3,9 @@ import {zh} from "./zh";
 
 // https://vitepress.dev/reference/site-config
 export default defineConfig({
+    cleanUrls: true,
     title: "Exif Helper",
-    description: "Read or write image exif without internet.",
+    description: "Read or write image exif without internet",
     themeConfig: {
         logo: '/logo.svg',
         langMenuLabel: 'Languages',

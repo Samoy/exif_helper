@@ -5,7 +5,7 @@ layout: home
 hero:
   name: "Exif小助手"
   text: "无需网络即可读取和修改图片Exif信息"
-  tagline: 快来试一试吧！
+  tagline: 快来试一试吧
   image:
     src: /logo.svg
     alt: Exif小助手

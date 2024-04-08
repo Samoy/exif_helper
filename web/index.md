@@ -4,8 +4,8 @@ layout: home
 
 hero:
   name: "Exif Helper"
-  text: "Read or write image exif without internet."
-  tagline: Come and have a try!
+  text: "Read or write image exif without internet"
+  tagline: Welcome to have a try!
   image:
     src: /logo.svg
     alt: Exif Helper
