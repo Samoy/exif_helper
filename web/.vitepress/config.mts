@@ -13,6 +13,7 @@ export default defineConfig({
         lightModeSwitchTitle: 'Switch to light mode',
         darkModeSwitchTitle: 'Switch to dark mode',
         footer: {
+            message: '<a href="/terms">Terms</a>&nbsp;&nbsp;&nbsp;&nbsp;<a href="/privacy">Privacy</a>',
             copyright: `Copyright © ${new Date().getFullYear()} Samoy Young`
         },
     },

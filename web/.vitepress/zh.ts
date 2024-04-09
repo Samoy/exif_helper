@@ -1,4 +1,4 @@
-import {defineConfig, type DefaultTheme} from 'vitepress'
+import {defineConfig} from 'vitepress'
 
 
 export const zh = defineConfig({
@@ -8,6 +8,7 @@ export const zh = defineConfig({
 
     themeConfig: {
         footer: {
+            message: '<a href="/zh/terms">服务协议</a>&nbsp;&nbsp;&nbsp;&nbsp;<a href="/zh/privacy">隐私政策</a>',
             copyright: `版权所有 © ${new Date().getFullYear()} Samoy Young`
         },
 
