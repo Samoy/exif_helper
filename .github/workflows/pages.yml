@@ -1,9 +1,6 @@
 # Sample workflow for building and deploying a VitePress site to GitHub Pages
 #
 name: Deploy Website Pages
-defaults:
-  run:
-    working-directory: web
 on:
   # Runs on pushes targeting the `main` branch. Change this to `master` if you're
   # using the `master` branch as the default branch.
@@ -28,6 +25,9 @@ concurrency:
 jobs:
   # Build job
   build:
+    defaults:
+      run:
+        working-directory: ./web
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
@@ -54,6 +54,9 @@ jobs:
 
   # Deployment job
   deploy:
+    defaults:
+      run:
+        working-directory: ./web
     environment:
       name: github-pages
       url: ${{ steps.deployment.outputs.page_url }}
