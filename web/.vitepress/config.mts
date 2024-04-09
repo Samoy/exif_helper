@@ -5,6 +5,7 @@ import {zh} from "./zh";
 export default defineConfig({
     cleanUrls: true,
     title: "Exif Helper",
+    outDir:'dist',
     description: "Read or write image exif without internet",
     themeConfig: {
         logo: '/logo.svg',
