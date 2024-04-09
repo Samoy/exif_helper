@@ -1,14 +1,15 @@
-name: Deploy VitePress site to Pages
+name: Deploy Website Pages
 
 
-defaults:
-  run:
-    working-directory: ./web
 
 on:
   push:
     branches: [main]
   workflow_dispatch:
+
+defaults:
+  run:
+    working-directory: ./web
 
 permissions:
   contents: read
