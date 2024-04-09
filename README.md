@@ -1,16 +1,73 @@
-# exif_helper
+# Exif Helper
 
-A new Flutter project.
+Read or write image exif without internet
 
-## Getting Started
+## Features
+### 💻 Cross Platform  
+Support Windows, Linux, Macos, Android and iOS
+### 📶 No Internet Required  
+Use it without internet, which effectively protects your privacy.
+### ✨ Open Source  
+The source code is open and free, you can modify it according to your needs.
 
-This project is a starting point for a Flutter application.
+## Screenshots
+<img src="https://www.samoy.site/exif_helper/screenshot_android.png"  height="400">
 
-A few resources to get you started if this is your first Flutter project:
+## Building
 
-- [Lab: Write your first Flutter app](https://docs.flutter.dev/get-started/codelab)
-- [Cookbook: Useful Flutter samples](https://docs.flutter.dev/cookbook)
+These commands are intended for maintainers only.
 
-For help getting started with Flutter development, view the
-[online documentation](https://docs.flutter.dev/), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
+### Windows
+
+**Traditional**
+
+```bash
+flutter build windows
+```
+
+**Local MSIX App**
+
+```bash
+flutter pub run msix:create
+```
+
+**Store ready**
+
+```bash
+flutter pub run msix:create --store
+```
+
+### MacOS
+
+```bash
+flutter build macos
+```
+
+### Linux
+
+
+Traditional Linux
+
+```bash
+flutter build linux
+```
+
+### Android
+
+Traditional APK
+
+```bash
+flutter build apk
+```
+
+AppBundle for Google Play
+
+```bash
+flutter build appbundle
+```
+
+### iOS
+
+```bash
+flutter build ipa
+```

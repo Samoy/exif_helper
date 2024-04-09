@@ -1,12 +1,48 @@
-import 'package:exif_helper/common/constant.dart';
-import 'package:exif_helper/models/language.dart';
+import 'dart:ui';
+
+import 'package:exif_helper/screens/index.dart';
 import 'package:exif_helper/theme/theme.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:provider/provider.dart';
+import 'package:window_manager/window_manager.dart';
+import 'package:routerino/routerino.dart';
+import 'package:exif_helper/models/system.dart';
 
-void main() {
+import 'extensions/platform_extension.dart';
+
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  if (PlatformExtension.isDesktop) {
+    await initDesktop();
+  } else {
+    initMobile();
+  }
   runApp(const MyApp());
+}
+
+Future<void> initDesktop() async {
+  await windowManager.ensureInitialized();
+  WindowOptions windowOptions = const WindowOptions(
+    center: true,
+    titleBarStyle: TitleBarStyle.normal,
+    minimumSize: Size(400, 700),
+    size: Size(1000, 800),
+  );
+  windowManager.waitUntilReadyToShow(windowOptions, () async {
+    await windowManager.show();
+    await windowManager.focus();
+  });
+}
+
+void initMobile() {
+  SystemChrome.setEnabledSystemUIMode(SystemUiMode.edgeToEdge);
+  SystemChrome.setSystemUIOverlayStyle(
+    const SystemUiOverlayStyle(
+      systemNavigationBarColor: Colors.transparent,
+    ),
+  );
 }
 
 class MyApp extends StatefulWidget {
@@ -20,67 +56,37 @@ class _MyAppState extends State<MyApp> {
   @override
   Widget build(BuildContext context) {
     return ChangeNotifierProvider(
-      create: (context) => LanguageProvider(languageItems: [
-        LanguageItem(name: 'English', locale: const Locale('en')),
-        LanguageItem(name: '中文', locale: const Locale('zh')),
-      ]),
-      child: MaterialApp(
-        title: appTitle,
-        theme: lightTheme,
-        darkTheme: darkTheme,
-        localizationsDelegates: AppLocalizations.localizationsDelegates,
-        supportedLocales: AppLocalizations.supportedLocales,
-        home: const MyHomePage(
-          title: 'Flutter Demo Home Page',
-        ),
-      ),
-    );
-  }
-}
-
-class MyHomePage extends StatefulWidget {
-  const MyHomePage({super.key, required this.title});
-
-  final String title;
-
-  @override
-  State<MyHomePage> createState() => _MyHomePageState();
-}
-
-class _MyHomePageState extends State<MyHomePage> {
-  int _counter = 0;
-
-  void _incrementCounter() {
-    setState(() {
-      _counter++;
-    });
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: Text(AppLocalizations.of(context)!.appTitle),
-        scrolledUnderElevation: 0,
-      ),
-      body: Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: <Widget>[
-            Text(
-                WidgetsBinding.instance.platformDispatcher.locale.languageCode),
-            Text(
-              '$_counter',
-              style: Theme.of(context).textTheme.headlineMedium,
+      create: (context) => SystemModel(),
+      child: Consumer<SystemModel>(
+        builder: (context, SystemModel system, child) {
+          Language language = system.currentLanguage; // 当前语言设置
+          // 构建MaterialApp
+          return MaterialApp(
+            debugShowCheckedModeBanner: false,
+            onGenerateTitle: (context) {
+              String title = AppLocalizations.of(context)!.appTitle;
+              if (PlatformExtension.isDesktop) {
+                (() async {
+                  await windowManager.setTitle(title);
+                })();
+              }
+              return title;
+            },
+            theme: lightTheme,
+            darkTheme: darkTheme,
+            themeMode: system.currentThemeMode,
+            locale: language == Language.system
+                ? PlatformDispatcher.instance.locale
+                : language.locale,
+            localizationsDelegates: AppLocalizations.localizationsDelegates,
+            supportedLocales: AppLocalizations.supportedLocales,
+            navigatorKey: Routerino.navigatorKey,
+            home: RouterinoHome<IndexPage>(
+              builder: () => const IndexPage(),
             ),
-          ],
-        ),
+          );
+        },
       ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: _incrementCounter,
-        tooltip: 'Increment',
-        child: const Icon(Icons.add),
-      ), // This trailing comma makes auto-formatting nicer for build methods.
     );
   }
 }
