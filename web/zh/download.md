@@ -4,7 +4,7 @@ layout: home
 
 
 <script lang="ts" setup>
-import { ref } from 'vue';
+import { ref, onMounted } from 'vue';
 const platforms = [{
 label: 'Windows',
 icon: '/Windows.svg'
@@ -22,7 +22,11 @@ label: 'iOS',
 icon: '/iOS.svg'
 }];
 
-const currentPlatform = ref(sessionStorage.getItem('platform') || getCurrentPlatform());
+const currentPlatform = ref('Unknown');
+
+onMounted(() => {
+  
+currentPlatform.value = sessionStorage.getItem('platform') || getCurrentPlatform();
 
 function getCurrentPlatform(): String {
   const userAgent = navigator.userAgent;
@@ -42,6 +46,8 @@ function getCurrentPlatform(): String {
 
   return 'Unknown';
 }
+
+})
 
 function changePlatform(platform: String) {
   currentPlatform.value = platform;
