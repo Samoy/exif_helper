@@ -30,24 +30,22 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v4
-        with:
-          fetch-depth: 0
+      - name: Change workspace
+        run: cd web
       - name: Install pnpm
         uses: pnpm/action-setup@v3
         with:
           version: 8
-      - name: Change workspace
-        run: cd web
       - name: Setup Node
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@v3
         with:
-          node-version: 20
-          cache: pnpm
+          node-version: 18
+          cache: 'pnpm'
       - name: Setup Pages
         uses: actions/configure-pages@v4
       - name: Install dependencies
         run:  pnpm install
-      - name: Build with VitePress
+      - name: Build
         run:  pnpm run docs:build
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3
