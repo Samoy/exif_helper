@@ -35,12 +35,12 @@ class _SettingsPageState extends State<SettingsPage> {
       _SettingItem<Language>(const Key("privacy"),
           icon: Icons.gpp_good_outlined,
           title: AppLocalizations.of(context)!.privacy,
-          url: Uri.parse("https://www.google.com")),
+          url: Uri.parse("https://www.samoy.site/exif_helper/privacy")),
       _SettingItem<Language>(
         const Key("terms"),
         icon: Icons.insert_drive_file_outlined,
         title: AppLocalizations.of(context)!.terms,
-        url: Uri.parse("https://www.baidu.com"),
+        url: Uri.parse("https://www.samoy.site/exif_helper/terms"),
       ),
       _SettingItem<Language>(
         const Key("about"),

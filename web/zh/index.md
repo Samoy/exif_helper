@@ -7,7 +7,7 @@ hero:
   text: "无需网络即可读取和修改图片Exif信息"
   tagline: 快来试一试吧
   image:
-    src: /logo.svg
+    src: /screenshot_android_cn.png
     alt: Exif小助手
   actions:
     - theme: brand

@@ -7,7 +7,7 @@ hero:
   text: "Read or write image exif without internet"
   tagline: Welcome to have a try!
   image:
-    src: /logo.svg
+    src: /screenshot_android.png
     alt: Exif Helper
   actions:
     - theme: brand
