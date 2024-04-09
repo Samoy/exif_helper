@@ -35,6 +35,8 @@ jobs:
         run: pnpm install
       - name: Build
         run: pnpm run docs:build
+      - name: Show Dist
+        run: ls -alh dist
       - name: Setup Pages
         uses: actions/configure-pages@v4
       - name: Upload artifact
