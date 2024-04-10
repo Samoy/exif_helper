@@ -17,13 +17,20 @@ jobs:
         uses: subosito/flutter-action@v2
         with:
           flutter-version: 3.19.1
-      - name: Setup Keystore
+      - name: Set up JDK
+        uses: actions/setup-java@v3
+        with:
+          java-version: '17'
+          distribution: 'temurin'
+      - name: Set up SDK
+        uses: android-actions/setup-android@v3
+      - name: Set up Keystore
         uses: timheuer/base64-to-file@v1
         with:
           encodedString: ${{secrets.KEY_STORE_FILE}}
           fileName: keystore.jks
           fileDir: android/app
-      - name: Setup Environment Variables
+      - name: Set up Environment Variables
         run: |
           echo "storeFile=keystore.jks" >> android/key.properties
           echo "storePassword=${{ secrets.STORE_PASSWORD }}" >> android/key.properties
@@ -31,9 +38,9 @@ jobs:
           echo "keyPassword=${{ secrets.KEY_PASSWORD }}" >> android/key.properties
       - run: flutter doctor
       - run: flutter pub get
-      - run: flutter build apk
+      - run: flutter build apk --split-per-abi
       - name: Upload Artifact
         uses: actions/upload-artifact@v3
         with:
           name: android-release
-          path: build/app/outputs/flutter-apk/app-release.apk
+          path: build/app/outputs/flutter-apk/*.apk
