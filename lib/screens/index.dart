@@ -3,7 +3,6 @@ import 'package:exif_helper/models/exif.dart';
 import 'package:exif_helper/models/search.dart';
 import 'package:exif_helper/screens/home.dart';
 import 'package:exif_helper/screens/settings.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:window_manager/window_manager.dart';

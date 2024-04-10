@@ -32,15 +32,17 @@ class _SettingsPageState extends State<SettingsPage> {
         options: Language.values,
         value: context.watch<SystemModel>().currentLanguage,
       ),
-      _SettingItem<Language>(const Key("privacy"),
-          icon: Icons.gpp_good_outlined,
-          title: AppLocalizations.of(context)!.privacy,
-          url: Uri.parse("https://www.samoy.site/exif_helper/privacy")),
+      _SettingItem<Language>(
+        const Key("privacy"),
+        icon: Icons.gpp_good_outlined,
+        title: AppLocalizations.of(context)!.privacy,
+        url: Uri.parse(AppLocalizations.of(context)!.privacyUrl),
+      ),
       _SettingItem<Language>(
         const Key("terms"),
         icon: Icons.insert_drive_file_outlined,
         title: AppLocalizations.of(context)!.terms,
-        url: Uri.parse("https://www.samoy.site/exif_helper/terms"),
+        url: Uri.parse(AppLocalizations.of(context)!.termsUrl),
       ),
       _SettingItem<Language>(
         const Key("about"),
@@ -96,22 +98,19 @@ class _SettingsPageState extends State<SettingsPage> {
           return SimpleDialog(
             title: Text(item.title),
             children: item.options!.map((e) {
-              return SimpleDialogOption(
-                child: Row(
-                  children: [
-                    Radio(
-                      value: e.name,
-                      groupValue: item.value?.name,
-                      onChanged: (value) {},
-                    ),
-                    Text(AppLocalizations.of(context)!.systemValue(e.name)),
-                  ],
-                ),
-                onPressed: () {
-                  context.read<SystemModel>().setSystemValue(e);
-                  Navigator.of(context).pop();
-                },
-              );
+              return Consumer<SystemModel>(builder: (context, model, child){
+                return RadioListTile(
+                  value: e,
+                  title: Text(AppLocalizations.of(context)!.systemValue(e.name)),
+                  groupValue: model.currentSystemValue[e.runtimeType],
+                  onChanged: (Object? value) {
+                    if (value != null) {
+                      model.setSystemValue(e);
+                    }
+                    Navigator.of(context).pop();
+                  },
+                );
+              });
             }).toList(),
           );
         },

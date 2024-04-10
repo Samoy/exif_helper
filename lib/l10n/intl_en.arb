@@ -48,5 +48,7 @@
         "type": "String"
       }
     }
-  }
+  },
+  "privacyUrl": "https://www.samoy.site/exif_helper/privacy",
+  "termsUrl": "https://www.samoy.site/exif_helper/terms"
 }

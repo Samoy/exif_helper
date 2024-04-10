@@ -50,5 +50,7 @@
         "type": "String"
       }
     }
-  }
+  },
+  "privacyUrl": "https://www.samoy.site/exif_helper/zh/privacy",
+  "termsUrl": "https://www.samoy.site/exif_helper/zh/terms"
 }
