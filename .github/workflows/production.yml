@@ -17,11 +17,20 @@ jobs:
         uses: subosito/flutter-action@v2
         with:
           flutter-version: 3.19.1
+          cache: true
       - name: Set up JDK
         uses: actions/setup-java@v3
         with:
           java-version: '17'
           distribution: 'temurin'
+          cache: true
+      - name: Cache Android SDK
+        uses: actions/cache@v3
+        with:
+          key: ${{ runner.os }}-android-sdk
+          path: |
+            ~/.android/build-cache
+            ~/.android/sdk
       - name: Set up SDK
         uses: android-actions/setup-android@v3
       - name: Set up Keystore
@@ -38,7 +47,7 @@ jobs:
           echo "keyPassword=${{ secrets.KEY_PASSWORD }}" >> android/key.properties
       - run: flutter doctor
       - run: flutter pub get
-      - run: flutter build apk --verbose
+      - run: flutter build apk --split-per-abi
       - name: Upload Artifact
         uses: actions/upload-artifact@v3
         with:
