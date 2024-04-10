@@ -2,6 +2,8 @@ name: Build Production
 on:
   push:
     branches: [main]
+    paths-ignore:
+      - 'web/**'
 
 permissions:
   contents: read

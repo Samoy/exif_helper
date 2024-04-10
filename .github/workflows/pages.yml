@@ -3,6 +3,8 @@ name: Deploy Website Pages
 on:
   push:
     branches: [main]
+    paths: 
+      - 'web/**'
 
 defaults:
   run:
