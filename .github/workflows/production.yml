@@ -23,6 +23,7 @@ jobs:
       - run: flutter pub get
       - run: flutter doctor
       - run: |
+          mkdir release
           dart run msix:create
           cp build/windows/x64/runner/Release/ExifHelper.msix release/ExifHelper.msix
           dart run msix:create -d Exif小助手 -n Exif小助手
