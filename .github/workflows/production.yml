@@ -1,0 +1,38 @@
+name: Build Production
+on:
+  push:
+    branches: [main]
+
+permissions:
+  contents: read
+  id-token: write
+
+jobs:
+  Android:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Clone repository
+        uses: actions/checkout@v4
+      - name: Set up Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          flutter-version: 3.19.1
+      - name: Setup Keystore
+        uses: timheuer/base64-to-file@v1
+        with:
+          encodedString: ${{secrets.KEY_STORE_FILE}}
+          fileName: keystore.jks
+          fileDir: android/app
+      - name: Setup Environment Variables
+        run: |
+          echo "storeFile=keystore.jks" >> android/key.properties
+          echo "storePassword=${{ secrets.STORE_PASSWORD }}" >> android/key.properties
+          echo "keyAlias=${{ secrets.KEY_ALIAS }}" >> android/key.properties
+          echo "keyPassword=${{ secrets.KEY_PASSWORD }}" >> android/key.properties
+      - run: flutter pub get
+      - run: flutter build apk --split-per-abi
+      - name: Upload Artifact
+        uses: actions/upload-artifact@v3
+        with:
+          name: android-release
+          path: build/app/outputs/flutter-apk/app**-release.apk
