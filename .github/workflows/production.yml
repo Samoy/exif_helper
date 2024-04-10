@@ -23,7 +23,7 @@ jobs:
         with:
           java-version: '17'
           distribution: 'temurin'
-          cache: true
+          cache: 'gradle'
       - name: Cache Android SDK
         uses: actions/cache@v3
         with:
