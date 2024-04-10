@@ -55,6 +55,7 @@ dev_dependencies:
   # package. See that file for information about deactivating specific lint
   # rules and activating additional ones.
   flutter_lints: ^3.0.0
+  msix: ^3.16.7
 
 # For information on the generic Dart part of this file, see the
 # following page: https://dart.dev/tools/pub/pubspec
@@ -101,3 +102,13 @@ flutter:
   # see https://flutter.dev/custom-fonts/#from-packages
 flutter_intl:
   enabled: true
+
+msix_config:
+  display_name: Exif Helper
+  output_name: ExifHelper
+  publisher_display_name: Samoy Young
+  identity_name: site.samoy.exifhelper
+  languages: en-US, zh-CN
+  msix_version: 0.0.0.1
+  logo_path: assets/images/logo.png
+  install_certificate: false
