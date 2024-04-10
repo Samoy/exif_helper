@@ -7,19 +7,19 @@ layout: home
 import { ref, onMounted } from 'vue';
 const platforms = [{
 label: 'Windows',
-icon: '/Windows.svg'
+icon: '/exif_helper/Windows.svg'
 }, {
 label: 'MacOS',
-icon: '/MacOS.svg'
+icon: '/exif_helper/MacOS.svg'
 },{
 label: 'Linux',
-icon: '/Linux.svg'
+icon: '/exif_helper/Linux.svg'
 },{
 label: 'Android',
-icon: '/Android.svg'
+icon: '/exif_helper/Android.svg'
 },{
 label: 'iOS',
-icon: '/iOS.svg'
+icon: '/exif_helper/iOS.svg'
 }];
 
 const currentPlatform = ref('Unknown');

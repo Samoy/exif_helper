@@ -3,6 +3,7 @@ import {zh} from "./zh";
 
 // https://vitepress.dev/reference/site-config
 export default defineConfig({
+    base: '/exif_helper/',
     cleanUrls: true,
     title: "Exif Helper",
     outDir:'dist',
@@ -14,7 +15,7 @@ export default defineConfig({
         lightModeSwitchTitle: 'Switch to light mode',
         darkModeSwitchTitle: 'Switch to dark mode',
         footer: {
-            message: '<a href="/terms">Terms</a>&nbsp;&nbsp;&nbsp;&nbsp;<a href="/privacy">Privacy</a>',
+            message: '<a href="./terms">Terms</a>&nbsp;&nbsp;&nbsp;&nbsp;<a href="./privacy">Privacy</a>',
             copyright: `Copyright © ${new Date().getFullYear()} Samoy Young`
         },
     },

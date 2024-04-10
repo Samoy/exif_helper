@@ -12,7 +12,7 @@ hero:
   actions:
     - theme: brand
       text: Download
-      link: ./download
+      link: /download
     - theme: alt
       text: Github
       link: https://github.com/samoy/exif_helper
