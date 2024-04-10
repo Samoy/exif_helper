@@ -11,7 +11,7 @@ export const zh = defineConfig({
             message: '<a href="./terms">服务协议</a>&nbsp;&nbsp;&nbsp;&nbsp;<a href="./privacy">隐私政策</a>',
             copyright: `版权所有 © ${new Date().getFullYear()} Samoy Young`
         },
-
+        returnToTopLabel:'返回顶部',
         langMenuLabel: '多语言',
         darkModeSwitchLabel: '主题',
         lightModeSwitchTitle: '切换到浅色模式',

@@ -2,12 +2,37 @@ name: Build Production
 on:
   push:
     branches: [main]
+    paths-ignore:
+      - 'web/**'
 
 permissions:
   contents: read
   id-token: write
 
 jobs:
+  Windows:
+    runs-on: windows-latest
+    steps:
+      - name: Clone repository
+        uses: actions/checkout@v4
+      - name: Set up Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          flutter-version: 3.19.1
+          cache: true
+      - run: flutter pub get
+      - run: flutter doctor
+      - run: |
+          dart run msix:create
+          cp build/windows/x64/runner/Release/ExifHelper.msix release/ExifHelper.msix
+          dart run msix:create -d Exif小助手 -n Exif小助手
+          cp build/windows/x64/runner/Release/Exif小助手.msix release/Exif小助手.msix
+      - name: Upload Artifact
+        uses: actions/upload-artifact@v3
+        with:
+          name: windows-release
+          path:
+            ${{ github.workspace }}/release
   Android:
     runs-on: ubuntu-latest
     steps:
