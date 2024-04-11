@@ -78,13 +78,6 @@ jobs:
           java-version: '17'
           distribution: 'temurin'
           cache: 'gradle'
-      - name: Cache Android SDK
-        uses: actions/cache@v3
-        with:
-          key: ${{ runner.os }}-android-sdk
-          path: |
-            ~/.android/build-cache
-            ~/.android/sdk
       - name: Set up SDK
         uses: android-actions/setup-android@v3
       - name: Set up Keystore
@@ -99,6 +92,14 @@ jobs:
           echo "storePassword=${{ secrets.STORE_PASSWORD }}" >> android/key.properties
           echo "keyAlias=${{ secrets.KEY_ALIAS }}" >> android/key.properties
           echo "keyPassword=${{ secrets.KEY_PASSWORD }}" >> android/key.properties
+      - name: Cache Android SDK
+        uses: actions/cache@v3
+        with:
+          key: ${{ runner.os }}-android-sdk
+          path: |
+              ~/.gradle/caches
+              ~/.gradle/wrapper
+              /usr/local/lib/android/sdk
       - name: Build
         run: flutter build apk --split-per-abi
       - name: Upload Artifact
