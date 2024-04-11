@@ -12,8 +12,6 @@ permissions:
 env:
   JAVA_VERSION: 17
   FLUTTER_VERSION: 3.19.1
-  CHINESE_NAME: Eixf小助手
-  ENGLISH_NAME: EixfHelper
 
 jobs:
   Windows:
@@ -32,10 +30,10 @@ jobs:
         run: |
           mkdir release
           dart run msix:create
-          cp build/windows/x64/runner/Release/${{env.ENGLISH_NAME}}.msix release/${{env.ENGLISH_NAME}}.msix
+          cp build/windows/x64/runner/Release/ExifHelper.msix release/ExifHelper.msix
           sleep 1
-          dart run msix:create -d ${{env.CHINESE_NAME}} -n ${{env.CHINESE_NAME}}
-          cp build/windows/x64/runner/Release/${{env.CHINESE_NAME}}.msix release/${{env.CHINESE_NAME}}.msix
+          dart run msix:create -d Exif小助手 -n Exif小助手
+          cp build/windows/x64/runner/Release/Exif小助手.msix release/Exif小助手.msix
       - name: Upload Artifact
         uses: actions/upload-artifact@v4
         with:
