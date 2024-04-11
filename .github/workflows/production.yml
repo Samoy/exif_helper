@@ -9,6 +9,12 @@ permissions:
   contents: read
   id-token: write
 
+env:
+  JAVA_VERSION: 17
+  FLUTTER_VERSION: 3.19.1
+  CHINESE_NAME: Eixf小助手
+  ENGLISH_NAME: EixfHelper
+
 jobs:
   Windows:
     runs-on: windows-latest
@@ -18,7 +24,7 @@ jobs:
       - name: Set up Flutter
         uses: subosito/flutter-action@v2
         with:
-          flutter-version: 3.19.1
+          flutter-version: ${{ env.FLUTTER_VERSION }}
           cache: true
       - name: Install Dependencies
         run: flutter pub get
@@ -26,9 +32,9 @@ jobs:
         run: |
           mkdir release
           dart run msix:create
-          cp build/windows/x64/runner/Release/ExifHelper.msix release/ExifHelper.msix
-          dart run msix:create -d Exif小助手 -n Exif小助手
-          cp build/windows/x64/runner/Release/Exif小助手.msix release/Exif小助手.msix
+          cp build/windows/x64/runner/Release/${{env.ENGLISH_NAME}}.msix release/${{env.ENGLISH_NAME}}.msix
+          dart run msix:create -d ${{env.CHINESE_NAME}} -n ${{env.CHINESE_NAME}}
+          cp build/windows/x64/runner/Release/${{env.CHINESE_NAME}}.msix release/${{env.CHINESE_NAME}}.msix
       - name: Upload Artifact
         uses: actions/upload-artifact@v4
         with:
@@ -48,7 +54,7 @@ jobs:
       - name: Set up Flutter
         uses: subosito/flutter-action@v2
         with:
-          flutter-version: 3.19.1
+          flutter-version: ${{env.FLUTTER_VERSION}}
           cache: true
       - name: Install Dependencies
         run: flutter pub get
@@ -70,15 +76,25 @@ jobs:
       - name: Set up Flutter
         uses: subosito/flutter-action@v2
         with:
-          flutter-version: 3.19.1
+          flutter-version: ${{env.FLUTTER_VERSION}}
           cache: true
       - name: Set up JDK
         uses: actions/setup-java@v4
         with:
-          java-version: '17'
+          java-version: ${{env.JAVA_VERSION}}
           distribution: 'temurin'
           cache: 'gradle'
-      - name: Set up SDK
+      - name: Cache Android SDK
+        id: cache-android-sdk
+        uses: actions/cache@v3
+        with:
+          key: ${{ runner.os }}-android-sdk
+          path: |
+              ~/.gradle/caches
+              ~/.gradle/wrapper
+              /usr/local/lib/android/sdk
+      - if: ${{ steps.cache-android-sdk.outputs.cache-hit != 'true' }}
+        name: Set up SDK
         uses: android-actions/setup-android@v3
       - name: Set up Keystore
         uses: timheuer/base64-to-file@v1
@@ -92,14 +108,6 @@ jobs:
           echo "storePassword=${{ secrets.STORE_PASSWORD }}" >> android/key.properties
           echo "keyAlias=${{ secrets.KEY_ALIAS }}" >> android/key.properties
           echo "keyPassword=${{ secrets.KEY_PASSWORD }}" >> android/key.properties
-      - name: Cache Android SDK
-        uses: actions/cache@v3
-        with:
-          key: ${{ runner.os }}-android-sdk
-          path: |
-              ~/.gradle/caches
-              ~/.gradle/wrapper
-              /usr/local/lib/android/sdk
       - name: Build
         run: flutter build apk --split-per-abi
       - name: Upload Artifact
