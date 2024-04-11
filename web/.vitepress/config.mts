@@ -5,7 +5,7 @@ import {zh} from "./zh";
 export default defineConfig({
     base: '/exif_helper/',
     cleanUrls: true,
-    title: "Exif Helper",
+    title: "ExifHelper",
     outDir:'dist',
     description: "Read or write image exif without internet",
     themeConfig: {

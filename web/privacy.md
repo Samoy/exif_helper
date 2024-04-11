@@ -13,13 +13,13 @@ Given that we do not collect any personal data, our practices are straightforwar
 
 
 ## Personal Data Collection and Use
-***Exif Helper*** is an open-source application, and without internet. In line with this, we confirm that we do not collect, store, or process any personal data from you while you use our application.
+***ExifHelper*** is an open-source application, and without internet. In line with this, we confirm that we do not collect, store, or process any personal data from you while you use our application.
 
 Personal data refers to any information that could potentially identify you as an individual. Since we do not collect such information, there's no possibility of us using, sharing, or selling this data.
 
 
 ## Security
-While ***Exif Helper*** does not collect personal data, we value your trust in providing any non-personal data, thus we strive to use acceptable means of protecting it. However, no method of transmission over the internet, or method of electronic storage is 100% secure and reliable, and we cannot guarantee its absolute security.
+While ***ExifHelper*** does not collect personal data, we value your trust in providing any non-personal data, thus we strive to use acceptable means of protecting it. However, no method of transmission over the internet, or method of electronic storage is 100% secure and reliable, and we cannot guarantee its absolute security.
 
 
 ## Changes to this Privacy Policy

@@ -56,9 +56,9 @@ function changePlatform(platform: String) {
 
 <div class="download">
 <h1>
-<img src="/logo.svg" alt="Exif Helper">
+<img src="/logo.svg" alt="ExifHelper">
 </h1>
-<h1>Download Exif Helper</h1>
+<h1>Download ExifHelper</h1>
 <div class="download-buttons">
 <button class="download-button" :class="{ 'active': currentPlatform === label }" v-for="{label,icon} in platforms" :key="label"
 @click="changePlatform(label)">

@@ -1,5 +1,5 @@
 name: exif_helper
-description: "A new Flutter project."
+description: "Read or write image exif without internet"
 # The following line prevents the package from being accidentally published to
 # pub.dev using `flutter pub publish`. This is preferred for private packages.
 publish_to: 'none' # Remove this line if you wish to publish to pub.dev
@@ -104,7 +104,7 @@ flutter_intl:
   enabled: true
 
 msix_config:
-  display_name: Exif Helper
+  display_name: ExifHelper
   output_name: ExifHelper
   publisher_display_name: Samoy Young
   identity_name: site.samoy.exifhelper

@@ -1,4 +1,4 @@
-# Exif Helper
+# ExifHelper
 
 Read or write image exif without internet
 

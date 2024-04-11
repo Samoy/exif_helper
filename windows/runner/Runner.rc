@@ -16,9 +16,12 @@
 /////////////////////////////////////////////////////////////////////////////
 // English (United States) resources
 
-#if !defined(AFX_RESOURCE_DLL) || defined(AFX_TARG_ENU)
-LANGUAGE LANG_ENGLISH, SUBLANG_ENGLISH_US
-
+#if !defined(AFX_RESOURCE_DLL) || defined(AFX_TARG_CHS)
+#ifdef USE_CHINESE_SIMPLIFIED
+LANGUAGE LANG_CHINESE, SUBLANG_CHINESE_SIMPLIFIED
+#else
+LANGUAGE LANG_CHINESE, SUBLANG_CHINESE_SIMPLIFIED
+#endif
 #ifdef APSTUDIO_INVOKED
 /////////////////////////////////////////////////////////////////////////////
 //
@@ -87,21 +90,40 @@ VS_VERSION_INFO VERSIONINFO
 BEGIN
     BLOCK "StringFileInfo"
     BEGIN
+        #ifdef USE_CHINESE_SIMPLIFIED
+        BLOCK "080404b0"
+        BEGIN
+          VALUE "CompanyName", "site.samoy"
+          VALUE "FileDescription", "Exif小助手"
+          VALUE "FileVersion", "1.0.0.0"
+          VALUE "InternalName", "exif_helper"
+          VALUE "LegalCopyright", "版权所有 (C) 2024 Samoy Young"
+          VALUE "OriginalFilename", "exif_helper.exe"
+          VALUE "ProductName", "Exif小助手"
+          VALUE "ProductVersion", "1.0.0"
+        END
+        #else
         BLOCK "040904e4"
         BEGIN
-            VALUE "CompanyName", "site.samoy" "\0"
-            VALUE "FileDescription", "exif_helper" "\0"
-            VALUE "FileVersion", VERSION_AS_STRING "\0"
-            VALUE "InternalName", "exif_helper" "\0"
-            VALUE "LegalCopyright", "Copyright (C) 2024 site.samoy. All rights reserved." "\0"
-            VALUE "OriginalFilename", "exif_helper.exe" "\0"
-            VALUE "ProductName", "exif_helper" "\0"
-            VALUE "ProductVersion", VERSION_AS_STRING "\0"
+            VALUE "CompanyName", "site.samoy"
+            VALUE "FileDescription", "ExifHelper"
+            VALUE "FileVersion", "1.0.0"
+            VALUE "InternalName", "exif_helper"
+            VALUE "LegalCopyright", "Copyright (C) 2024 Samoy Young All rights reserved."
+            VALUE "OriginalFilename", "exif_helper.exe"
+            VALUE "ProductName", "ExifHelper"
+            VALUE "ProductVersion", "1.0.0"
         END
+        #endif
     END
     BLOCK "VarFileInfo"
     BEGIN
-        VALUE "Translation", 0x409, 1252
+        VALUE "Translation",
+              #ifdef USE_CHINESE_SIMPLIFIED
+              0x804, 1200
+              #else
+              0x409, 1252
+              #endif
     END
 END
 

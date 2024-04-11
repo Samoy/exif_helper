@@ -9,7 +9,7 @@ Last updated：April 09, 2024
 Please read these terms and conditions carefully before using Our Service.
 ## 1. Introduction
 These Service terms (hereinafter referred to as the ***Terms***) are entered into by and between you and us, 
-concerning your use of the standalone desktop application named ***Exif Helper*** (hereinafter referred to as the ***Application*** or ***Software***) provided by us.
+concerning your use of the standalone desktop application named ***ExifHelper*** (hereinafter referred to as the ***Application*** or ***Software***) provided by us.
 This Application enables users to view and modify Exif information of images without involving any network connection functionality.
 
 ## 2. Software Use

@@ -3,12 +3,12 @@
 layout: home
 
 hero:
-  name: "Exif Helper"
+  name: "ExifHelper"
   text: "Read or write image exif without internet"
   tagline: Welcome to have a try!
   image:
     src: /screenshot_android.png
-    alt: Exif Helper
+    alt: ExifHelper
   actions:
     - theme: brand
       text: Download

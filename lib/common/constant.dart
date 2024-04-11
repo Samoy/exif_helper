@@ -1,5 +1,5 @@
 /*--------------------Text Start--------------------*/
-const String appTitle = "Exif Helper";
+const String appTitle = "ExifHelper";
 const String appVersion = "0.0.1+1";
 /*--------------------Text   End--------------------*/
 
