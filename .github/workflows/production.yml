@@ -55,12 +55,12 @@ jobs:
       - name: Build
         run: flutter build linux
       - name: Compress
-        run: tar release.tar.gz build/linux/x64/release/bundle   
+        run: tar -czvf exif_helper.tar.gz -C build/linux/x64/release/bundle .   
       - name: Upload Artifact
         uses: actions/upload-artifact@v4
         with:
           name: linux-release
-          path: release.tar.gz    
+          path: exif_helper.tar.gz  
   
   Android:
     runs-on: ubuntu-latest
@@ -75,7 +75,7 @@ jobs:
       - name: Set up JDK
         uses: actions/setup-java@v4
         with:
-          java-version: '21'
+          java-version: '17'
           distribution: 'temurin'
           cache: 'gradle'
       - name: Cache Android SDK
