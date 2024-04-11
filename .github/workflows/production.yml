@@ -10,7 +10,7 @@ permissions:
   id-token: write
 
 jobs:
-  WindowsBuild:
+  Windows:
     runs-on: windows-latest
     steps:
       - name: Clone repository
@@ -35,7 +35,34 @@ jobs:
           name: windows-release
           path:
             ${{ github.workspace }}/release
-  LinuxPrepare:
+  
+  Linux:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Clone repository
+        uses: actions/checkout@v4
+      - name: Install Tools
+        run: |
+          sudo apt-get update
+          sudo apt-get install clang cmake git ninja-build pkg-config libgtk-3-dev liblzma-dev libstdc++-12-dev -y
+      - name: Set up Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          flutter-version: 3.19.1
+          cache: true
+      - name: Install Dependencies
+        run: flutter pub get
+      - name: Build
+        run: flutter build linux
+      - name: Compress
+        run: tar release.tar.gz build/linux/x64/release/bundle   
+      - name: Upload Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: linux-release
+          path: release.tar.gz    
+  
+  Android:
     runs-on: ubuntu-latest
     steps:
       - name: Clone repository
@@ -45,27 +72,6 @@ jobs:
         with:
           flutter-version: 3.19.1
           cache: true
-      - name: Install Dependencies
-        run: flutter pub get
-  Linux: 
-    needs: LinuxPrepare
-    runs-on: ubuntu-latest
-    steps:
-      - name: Install Tools
-        run: apt-get install clang cmake git ninja-build pkg-config libgtk-3-dev liblzma-dev libstdc++-12-dev -y
-      - name: Build
-        run: flutter build linux
-      - name: Compress
-        run: tar release.tar.gz build/linux/x64/release/bundle   
-      - name: Upload Artifact
-        uses: actions/upload-artifact@v4
-        with:
-          name: linux-release
-          path: release.tar.gz
-  Android:
-    needs: LinuxPrepare
-    runs-on: ubuntu-latest
-    steps:
       - name: Set up JDK
         uses: actions/setup-java@v4
         with:
