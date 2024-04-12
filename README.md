@@ -11,7 +11,7 @@ Use it without internet, which effectively protects your privacy.
 The source code is open and free, you can modify it according to your needs.
 
 ## Screenshots
-<img src="https://www.samoy.site/exif_helper/screenshot_android.png"  height="400">
+<img alt="Android screenshot" src="https://www.samoy.site/exif_helper/screenshot_android.png"  height="400">
 
 ## Building
 
@@ -25,12 +25,18 @@ These commands are intended for maintainers only.
 flutter build windows
 ```
 
+
+**Local Executable App**
+
+```bash
+iscc scripts/build_windows.iss 
+```
+
 **Local MSIX App**
 
 ```bash
 dart run msix:create
 ```
-
 **Store ready**
 
 ```bash
