@@ -45,7 +45,7 @@ class _HomePageState extends State<HomePage> {
                 controller: _scrollController,
                 slivers: [
                   SliverAppBar(
-                    title: Text(AppLocalizations.of(context)!.exifInfo),
+                    title: Text(AppLocalizations.of(context)!.exif),
                     actions: [
                       AnimatedContainer(
                         width: searchModel.showSearch ? 200 : 0,

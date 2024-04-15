@@ -2,15 +2,30 @@
 $ENGLISHE_NAME='ExifHelper'
 $BUILDE_PATH="${pwd}\build\windows\x64\runner\Release"
 
-# Create Release Directory
-if (-not(Test-Path "${pwd}/release"))
+# Define Clean Function
+function Clean
 {
-    mkdir "${pwd}/release"
+    param (
+        $path
+    )
+
+    if (Test-Path $path)
+    {
+        Remove-Item -Path $path -Recurse
+    }
 }
+
+# Create Release Directory
+if (Test-Path "${pwd}/release")
+{
+    Remove-Item -Path "${pwd}/release" -Recurse
+}
+mkdir "${pwd}/release"
 # ======================================= Build EXE and ZIP =============================================
 # Set USE_CHINESE_SIMPLIFIED=1 to build Chinese zip version
 $env:USE_CHINESE_SIMPLIFIED=1
 # Build Chinese version
+Clean $BUILDE_PATH
 flutter clean
 flutter pub get
 flutter build windows
@@ -30,7 +45,7 @@ Remove-Item -Path "ENV:USE_CHINESE_SIMPLIFIED"
 # Wait 1 second
 Start-Sleep 1
 # Build English version
-flutter clean
+Clean $BUILDE_PATH
 flutter pub get
 flutter build windows
 # Build EXE
@@ -45,14 +60,14 @@ Compress-Archive @compress
 
 # ======================================= Build MSIX ============================================
 # Build English version
-flutter clean
+Clean $BUILDE_PATH
 flutter pub get
 dart run msix:create
 Copy-Item -Path "${BUILDE_PATH}\${ENGLISHE_NAME}.msix" -Destination "${pwd}\release\${ENGLISHE_NAME}_windows_x64.msix"
 Start-Sleep 1
 
 # Build Chinese version
-flutter clean
+Clean $BUILDE_PATH
 flutter pub get
 dart run msix:create -d ${CHINESE_NAME} -n ${CHINESE_NAME}
 Copy-Item -Path "${BUILDE_PATH}\${CHINESE_NAME}.msix" -Destination "${pwd}\release\${CHINESE_NAME}_windows_x64.msix"

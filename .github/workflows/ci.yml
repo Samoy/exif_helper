@@ -48,18 +48,14 @@ jobs:
         with:
           flutter-version: ${{env.FLUTTER_VERSION}}
           cache: true
-      - name: Install Dependencies
-        run: flutter pub get
       - name: Build
-        run: flutter build linux
-      - name: Compress
-        run: tar -czvf exif_helper.tar.gz -C build/linux/x64/release/bundle .
+        run: ./scripts/build_linux.sh
       - name: Upload Artifact
         id: upload-linux-artifact
         uses: actions/upload-artifact@v4
         with:
           name: linux-release
-          path: exif_helper.tar.gz
+          path:  ${{ github.workspace }}/release
   Android:
     name: Build Android
     runs-on: ubuntu-latest

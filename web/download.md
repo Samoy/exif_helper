@@ -5,21 +5,22 @@ layout: home
 
 <script lang="ts" setup>
 import { ref, onMounted } from 'vue';
+import { withBase } from 'vitepress'
 const platforms = [{
 label: 'Windows',
-icon: '/exif_helper/Windows.svg'
+icon: '/Windows.svg'
 }, {
 label: 'MacOS',
-icon: '/exif_helper/MacOS.svg'
+icon: '/MacOS.svg'
 },{
 label: 'Linux',
-icon: '/exif_helper/Linux.svg'
+icon: '/Linux.svg'
 },{
 label: 'Android',
-icon: '/exif_helper/Android.svg'
+icon: '/Android.svg'
 },{
 label: 'iOS',
-icon: '/exif_helper/iOS.svg'
+icon: '/iOS.svg'
 }];
 
 const currentPlatform = ref('Unknown');
@@ -62,7 +63,7 @@ function changePlatform(platform: String) {
 <div class="download-buttons">
 <button class="download-button" :class="{ 'active': currentPlatform === label }" v-for="{label,icon} in platforms" :key="label"
 @click="changePlatform(label)">
-<img class="icon" :src="icon"/> {{label}}
+<img class="icon" :src="withBase(icon)"/> {{label}}
 </button>
 </div>
 <div class="download-area">
@@ -70,9 +71,9 @@ function changePlatform(platform: String) {
  <h4>Windows Downloads</h4>
 <div>
 <h6>Binaries</h6>
-<a class="download-link">⬇️ EXE</a>
-<a class="download-link">⬇️ MSI</a>
-<a class="download-link">⬇️ ZIP</a>
+<a class="download-link" download :href="withBase('/release/ExifHelper_windows_x64.exe')">⬇️ EXE</a>
+<a class="download-link" download :href="withBase('/release/ExifHelper_windows_x64.msix')">⬇️ MSIX</a>
+<a class="download-link" download :href="withBase('/release/ExifHelper_windows_x64.zip')">⬇️ ZIP</a>
 </div>
 <div>
 <div>
@@ -102,8 +103,7 @@ function changePlatform(platform: String) {
  <h4>Linux Downloads</h4>
 <div>
 <h6>Binaries</h6>
-<a class="download-link">⬇️ TAR</a>
-<a class="download-link">⬇️ DEB</a>
+<a class="download-link" download :href="withBase('/release/ExifHelper.tar.gz')">⬇️ TAR</a>
 </div>
 <div>
 </div>
@@ -112,7 +112,7 @@ function changePlatform(platform: String) {
  <h4>Android Downloads</h4>
 <div>
 <h6>Binaries</h6>
-<a class="download-link">⬇️ APK</a>
+<a class="download-link" :href="withBase('/release/ExifHelper.apk')">⬇️ APK</a>
 </div>
 <div>
 <h6>Google Play</h6>
