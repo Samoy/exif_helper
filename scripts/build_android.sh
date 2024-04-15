@@ -5,7 +5,7 @@ if [ ! -d "$(pwd)/release" ]; then
 fi
 chmod 755 "$(pwd)/release"
 # Cleanup
-rm -rf "$(pwd)/release"
+rm -rf "$(pwd)/release/*"
 flutter clean
 # Build APK
 flutter pub get
