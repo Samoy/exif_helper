@@ -31,6 +31,10 @@ export default defineConfig({
         '<a href="./terms">Terms</a>&nbsp;&nbsp;&nbsp;&nbsp;<a href="./privacy">Privacy</a>',
       copyright: `Copyright © ${new Date().getFullYear()} Samoy Young`,
     },
+    notFound: {
+      quote:
+        "Please check that you have entered the correct URL, or click the button below back to the home page.",
+    },
   },
   locales: {
     root: {

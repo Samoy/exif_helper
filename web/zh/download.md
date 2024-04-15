@@ -73,9 +73,9 @@ function changePlatform(platform: String) {
  <h4>Windows下载</h4>
 <div>
 <h6>二进制文件</h6>
-<a class="download-link" download :href="withBase('/release/Exif小助手_windows_x64.exe')">⬇️ EXE</a>
-<a class="download-link" download :href="withBase('/release/Exif小助手_windows_x64.msix')">⬇️ MSIX</a>
-<a class="download-link" download :href="withBase('/release/Exif小助手_windows_x64.zip')">⬇️ ZIP</a>
+<a class="download-link" target="_blank" download :href="withBase('/release/Exif小助手_windows_x64.exe')">⬇️ EXE</a>
+<a class="download-link" target="_blank" download :href="withBase('/release/Exif小助手_windows_x64.msix')">⬇️ MSIX</a>
+<a class="download-link" target="_blank" download :href="withBase('/release/Exif小助手_windows_x64.zip')">⬇️ ZIP</a>
 </div>
 <div>
 <div>
@@ -105,7 +105,7 @@ function changePlatform(platform: String) {
  <h4>Linux下载</h4>
 <div>
 <h6>二进制文件</h6>
-<a class="download-link" download :href="withBase('/release/Exif小助手.tar.gz')">⬇️ TAR</a>
+<a class="download-link" target="_blank" download :href="withBase('/release/Exif小助手.tar.gz')">⬇️ TAR</a>
 </div>
 <div>
 </div>
@@ -114,7 +114,7 @@ function changePlatform(platform: String) {
  <h4>Android下载</h4>
 <div>
 <h6>二进制文件</h6>
-<a class="download-link" download :href="withBase('/release/Exif小助手.apk')">⬇️ APK</a>
+<a class="download-link" target="_blank" download :href="withBase('/release/Exif小助手.apk')">⬇️ APK</a>
 </div>
 <div>
 <h6>Google Play</h6>

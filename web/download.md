@@ -71,9 +71,9 @@ function changePlatform(platform: String) {
  <h4>Windows Downloads</h4>
 <div>
 <h6>Binaries</h6>
-<a class="download-link" download :href="withBase('/release/ExifHelper_windows_x64.exe')">⬇️ EXE</a>
-<a class="download-link" download :href="withBase('/release/ExifHelper_windows_x64.msix')">⬇️ MSIX</a>
-<a class="download-link" download :href="withBase('/release/ExifHelper_windows_x64.zip')">⬇️ ZIP</a>
+<a class="download-link" target="_blank" download :href="withBase('/release/ExifHelper_windows_x64.exe')">⬇️ EXE</a>
+<a class="download-link" target="_blank" download :href="withBase('/release/ExifHelper_windows_x64.msix')">⬇️ MSIX</a>
+<a class="download-link" target="_blank" download :href="withBase('/release/ExifHelper_windows_x64.zip')">⬇️ ZIP</a>
 </div>
 <div>
 <div>
@@ -103,7 +103,7 @@ function changePlatform(platform: String) {
  <h4>Linux Downloads</h4>
 <div>
 <h6>Binaries</h6>
-<a class="download-link" download :href="withBase('/release/ExifHelper.tar.gz')">⬇️ TAR</a>
+<a class="download-link" target="_blank" download :href="withBase('/release/ExifHelper.tar.gz')">⬇️ TAR</a>
 </div>
 <div>
 </div>
@@ -112,7 +112,7 @@ function changePlatform(platform: String) {
  <h4>Android Downloads</h4>
 <div>
 <h6>Binaries</h6>
-<a class="download-link" :href="withBase('/release/ExifHelper.apk')">⬇️ APK</a>
+<a class="download-link" target="_blank" download :href="withBase('/release/ExifHelper.apk')">⬇️ APK</a>
 </div>
 <div>
 <h6>Google Play</h6>

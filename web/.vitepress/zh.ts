@@ -28,5 +28,11 @@ export const zh = defineConfig({
     darkModeSwitchLabel: "主题",
     lightModeSwitchTitle: "切换到浅色模式",
     darkModeSwitchTitle: "切换到深色模式",
+    notFound: {
+      title: "页面飞走了",
+      quote: "请检查您输入的网址是否正确，或点击以下按钮返回主页。",
+      linkLabel: "返回主页",
+      linkText: "返回主页",
+    },
   },
 });
