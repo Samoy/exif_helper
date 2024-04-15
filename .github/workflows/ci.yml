@@ -126,17 +126,20 @@ jobs:
         uses: actions/download-artifact@v4
         with:
           name: windows-release
-          path: ./public/release
+          # working-directory not work
+          path: ./web/public/release
       - name: Add Linux Artifacts
         uses: actions/download-artifact@v4
         with:
           name: linux-release
-          path: ./public/release
+          # working-directory not work
+          path: ./web/public/release
       - name: Add Android Artifacts
         uses: actions/download-artifact@v4
         with:
           name: android-release
-          path: ./public/release
+          # working-directory not work
+          path: ./web/public/release
       - name: Install pnpm
         uses: pnpm/action-setup@v3
         with:
