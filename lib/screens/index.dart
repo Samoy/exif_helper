@@ -149,10 +149,12 @@ class _IndexPageState extends State<IndexPage> with WindowListener {
   }
 
   Widget _buildIcon(_ScaffoldDestination destination) {
-    bool selected = _selectedIndex == _destinations.indexOf(destination);
+    int index = _destinations.indexOf(destination);
+    bool selected = _selectedIndex == index;
     const double selectedScale = 1.2;
     const double unselectedScale = 1.0;
     return AnimatedSwitcher(
+      key: ValueKey<String>("navigation_$index"),
       duration: const Duration(milliseconds: 150),
       switchInCurve: Curves.easeIn,
       switchOutCurve: Curves.easeOut,
@@ -168,7 +170,7 @@ class _IndexPageState extends State<IndexPage> with WindowListener {
       },
       child: Icon(
         selected ? destination.selectedIcon : destination.icon,
-        key: ValueKey<int>(_selectedIndex),
+        key: ValueKey<String>("navigation_icon_$_selectedIndex"),
       ),
     );
   }

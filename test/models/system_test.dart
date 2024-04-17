@@ -1,13 +1,10 @@
 import 'package:exif_helper/models/system.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:mockito/annotations.dart';
 import 'package:mockito/mockito.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 
-import 'system_test.mocks.dart';
+import '../mock/system_test.mocks.dart';
 
-@GenerateMocks([SharedPreferences])
 void main() {
   group('test SystemModel', () {
     late MockSharedPreferences mockPrefs;
