@@ -30,10 +30,21 @@ jobs:
           cache: true
 
       - name: Install dependencies
+        id: install
         run: flutter pub get
 
-      - name: Analyze project source
+      - name: Check formatting
+        run: dart format --output=none --set-exit-if-changed .
+        if: always() && steps.install.outcome == 'success'
+
+      - name: Analyze code
         run: dart analyze
+        if: always() && steps.install.outcome == 'success'
 
       - name: Run tests
-        run: flutter test
+        run: flutter test --coverage --reporter github
+      - name: Upload coverage to Codecov
+        uses: coverallsapp/github-action@v2.2.3
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          path-to-lcov: coverage/lcov.info
