@@ -1,5 +1,5 @@
 import { defineConfig } from "vitepress";
-import pkg from "../package.json";
+import pkg from "../package.json"; 
 
 export const zh = defineConfig({
   lang: "zh-Hans",

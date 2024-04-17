@@ -6,6 +6,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:provider/provider.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:window_manager/window_manager.dart';
 import 'package:routerino/routerino.dart';
 import 'package:exif_helper/models/system.dart';
@@ -53,10 +54,22 @@ class MyApp extends StatefulWidget {
 }
 
 class _MyAppState extends State<MyApp> {
+  SharedPreferences? _preferences;
+
+  @override
+  void initState() {
+    init();
+    super.initState();
+  }
+
+  init() async {
+    _preferences = await SharedPreferences.getInstance();
+  }
+
   @override
   Widget build(BuildContext context) {
     return ChangeNotifierProvider(
-      create: (context) => SystemModel(),
+      create: (context) => SystemModel(prefs: _preferences),
       child: Consumer<SystemModel>(
         builder: (context, SystemModel system, child) {
           Language language = system.currentLanguage; // 当前语言设置
