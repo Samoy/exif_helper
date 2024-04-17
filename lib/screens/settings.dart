@@ -98,10 +98,11 @@ class _SettingsPageState extends State<SettingsPage> {
           return SimpleDialog(
             title: Text(item.title),
             children: item.options!.map((e) {
-              return Consumer<SystemModel>(builder: (context, model, child){
+              return Consumer<SystemModel>(builder: (context, model, child) {
                 return RadioListTile(
                   value: e,
-                  title: Text(AppLocalizations.of(context)!.systemValue(e.name)),
+                  title:
+                      Text(AppLocalizations.of(context)!.systemValue(e.name)),
                   groupValue: model.currentSystemValue[e.runtimeType],
                   onChanged: (Object? value) {
                     if (value != null) {

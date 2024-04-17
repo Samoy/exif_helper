@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class SystemModel extends ChangeNotifier {
-
   SystemModel({required SharedPreferences? prefs}) {
     _prefs = prefs;
     init();

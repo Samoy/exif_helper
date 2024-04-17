@@ -30,10 +30,21 @@ jobs:
           cache: true
 
       - name: Install dependencies
+        id: install
         run: flutter pub get
 
-      - name: Analyze project source
-        run: dart analyze
+      - name: Check formatting
+        run: dart format --output=none --set-exit-if-changed .
+        if: always() && steps.install.outcome == 'success'
+
+      - name: Analyze code
+        run: dart analyze --fatal-infos
+        if: always() && steps.install.outcome == 'success'
 
       - name: Run tests
-        run: flutter test
+        run: flutter test --coverage --reporter github
+      - name: Upload coverage reports to Codecov
+        uses: codecov/codecov-action@v4.0.1
+        with:
+          token: ${{ secrets.CODECOV_TOKEN }}
+          slug: Samoy/exif_helper
