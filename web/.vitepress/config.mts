@@ -1,14 +1,16 @@
-import { defineConfig } from "vitepress";
+import { DefaultTheme, UserConfig, defineConfig } from "vitepress";
 import { zh } from "./zh";
 import pkg from "../package.json";
 
 // https://vitepress.dev/reference/site-config
+let baseDir = "/exif_helper/";
 export default defineConfig({
-  base: "/exif_helper/",
+  base: baseDir,
   cleanUrls: true,
   title: "ExifHelper",
   outDir: "dist",
   description: "Read or write image exif without internet",
+  head: [["link", { rel: "icon", href: `${baseDir}favicon.ico` }]],
   themeConfig: {
     logo: "/logo.svg",
     langMenuLabel: "Languages",

@@ -19,33 +19,33 @@ class _SettingsPageState extends State<SettingsPage> {
   void _buildSettings() {
     _settings = [
       _SettingItem<ThemeMode>(
-        const Key("theme"),
+        const ValueKey("theme"),
         icon: Icons.color_lens,
         title: AppLocalizations.of(context)!.theme,
         options: ThemeMode.values,
         value: context.watch<SystemModel>().currentThemeMode,
       ),
       _SettingItem<Language>(
-        const Key("language"),
+        const ValueKey("language"),
         icon: Icons.language,
         title: AppLocalizations.of(context)!.language,
         options: Language.values,
         value: context.watch<SystemModel>().currentLanguage,
       ),
       _SettingItem<Language>(
-        const Key("privacy"),
+        const ValueKey("privacy"),
         icon: Icons.gpp_good_outlined,
         title: AppLocalizations.of(context)!.privacy,
         url: Uri.parse(AppLocalizations.of(context)!.privacyUrl),
       ),
       _SettingItem<Language>(
-        const Key("terms"),
+        const ValueKey("terms"),
         icon: Icons.insert_drive_file_outlined,
         title: AppLocalizations.of(context)!.terms,
         url: Uri.parse(AppLocalizations.of(context)!.termsUrl),
       ),
       _SettingItem<Language>(
-        const Key("about"),
+        const ValueKey("about"),
         icon: Icons.info_outline,
         title: AppLocalizations.of(context)!.about,
       ),
@@ -69,6 +69,7 @@ class _SettingsPageState extends State<SettingsPage> {
           itemBuilder: (context, index) {
             _SettingItem item = _settings[index];
             return ListTile(
+              key: item.key,
               minVerticalPadding: normalPadding,
               leading: Icon(
                 item.icon,
