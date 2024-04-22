@@ -1,5 +1,6 @@
 import 'package:exif_helper/common/constant.dart';
-import 'package:exif_helper/models/exif.dart';
+import 'package:exif_helper/models/image_path.dart';
+import 'package:exif_helper/models/image_exif.dart';
 import 'package:exif_helper/models/search.dart';
 import 'package:exif_helper/screens/home.dart';
 import 'package:exif_helper/screens/settings.dart';
@@ -64,16 +65,24 @@ class _IndexPageState extends State<IndexPage> with WindowListener {
   Widget build(BuildContext context) {
     return MultiProvider(
       providers: [
-        ChangeNotifierProvider(create: (context) => ExifModel()),
         ChangeNotifierProvider(create: (context) => SearchModel()),
+        ChangeNotifierProvider(create: (context) => ImagePathModel()),
       ],
-      child: OrientationBuilder(
-        builder: (BuildContext context, Orientation orientation) {
-          if (orientation == Orientation.landscape) {
-            return _buildLandscape();
-          }
-          return _buildPortrait();
+      child: ChangeNotifierProxyProvider<ImagePathModel, ImageExifModel>(
+        create: (context) => ImageExifModel(),
+        update: (context, imagePathModel, previous) {
+          final exifModel = ImageExifModel(path: imagePathModel.imagePath);
+          exifModel.fetchImageExifInfo();
+          return exifModel;
         },
+        child: OrientationBuilder(
+          builder: (BuildContext context, Orientation orientation) {
+            if (orientation == Orientation.landscape) {
+              return _buildLandscape();
+            }
+            return _buildPortrait();
+          },
+        ),
       ),
     );
   }

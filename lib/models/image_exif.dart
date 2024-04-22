@@ -1,75 +1,73 @@
-import 'dart:async';
 import 'dart:collection';
-
 import 'package:flutter/foundation.dart';
-import 'package:image/image.dart';
+import 'package:flutter/material.dart';
+import 'package:image/image.dart' as img;
 
-class ExifModel extends ChangeNotifier {
-  String? _path;
-  Future<Image?>? _image;
-  Image? _imageData;
+class ImageExifModel extends ChangeNotifier {
+  ImageExifModel({this.path = ""});
 
+  final String path;
+
+  final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
+  img.Image? _imageData;
+  bool _loading = false;
+  img.Image? _image;
   List<ExifItem> _exifItems = [];
 
-  String get path => _path ?? "";
+  bool get loading => _loading;
 
-  Future<Image?>? get image => _image;
+  img.Image? get image => _image;
 
-  Image? get imageData => _imageData;
+  img.Image? get imageData => _imageData;
+
+  GlobalKey<FormState> get formKey => _formKey;
 
   UnmodifiableListView<ExifItem> get exifItems =>
       UnmodifiableListView(_exifItems);
 
-  void setImagePath(String path) {
-    _path = path;
-    _image = _fetchExifData(_path!);
+  fetchImageExifInfo() async {
+    if (path.isEmpty) return;
+    _loading = true;
+    _image = await compute((message) => img.decodeImageFile(message), path);
+    _setImageData(_image?.clone());
+    _setExifItems(_imageData);
+    _loading = false;
     notifyListeners();
   }
 
-  void setImageData(Image? image) {
+  void _setImageData(img.Image? image) {
     if (image == null) return;
     _imageData = image;
-  }
-
-  void clearImage() {
-    _path = null;
-    _image = null;
-    _exifItems.clear();
     notifyListeners();
   }
 
-  Future<Image?> _fetchExifData(String path) {
-    return compute((path) {
-      return path.isEmpty ? null : decodeImageFile(path).then((value) => value);
-    }, path);
-  }
-
-  void setExifItems(Image? image) {
+  void _setExifItems(img.Image? image) {
     if (image == null) {
       return;
     }
+    final List<ExifItem> items = [];
     final directories = image.exif;
     final getTagName = directories.getTagName;
-    List<ExifItem> items = [];
     for (final name in directories.keys) {
-      List<Map<String, IfdValue?>> info = [];
+      List<Map<String, img.IfdValue?>> info = [];
       final directory = directories[name];
       for (final tag in directory.keys) {
         final value = directory[tag];
         final tagName = getTagName(tag);
-        if (tagName != "<unknown>" && value?.type != IfdValueType.undefined) {
+        if (tagName != "<unknown>" &&
+            value?.type != img.IfdValueType.undefined) {
           info.add({tagName: value});
         }
       }
       items.add(ExifItem(name, info));
       for (final subName in directory.sub.keys) {
-        List<Map<String, IfdValue?>> subInfo = [];
+        List<Map<String, img.IfdValue?>> subInfo = [];
         final subDirectory = directory.sub[subName];
         for (final tag in subDirectory.keys) {
           final value = subDirectory[tag];
           final subTagName = _getSubTagName(subName, tag);
           if (subTagName != "<unknown>" &&
-              value?.type != IfdValueType.undefined) {
+              value?.type != img.IfdValueType.undefined) {
             subInfo.add({subTagName: value});
           }
         }
@@ -77,11 +75,13 @@ class ExifModel extends ChangeNotifier {
       }
     }
     _exifItems = items;
+    notifyListeners();
   }
 
-  void changeExifValue(
-      Map<String, IfdValue?> info, String tag, String key, String value) {
-    IfdValue? ifdValue = info[key]?.clone();
+  void changeExifValue(Map<String, img.IfdValue?> info, ExifItem exifItem,
+      String key, String value) {
+    img.IfdValue? ifdValue = info[key]?.clone();
+    String tag = exifItem.tag;
     if (ifdValue != null && value.isNotEmpty) {
       try {
         _setIfdValue(ifdValue, key, value);
@@ -104,7 +104,14 @@ class ExifModel extends ChangeNotifier {
     }
   }
 
-  void _setIfdValue(IfdValue ifdValue, String key, String value) {
+  void resetExif() {
+    _formKey.currentState?.reset();
+    _setImageData(_image?.clone());
+    _setExifItems(_imageData);
+    notifyListeners();
+  }
+
+  void _setIfdValue(img.IfdValue ifdValue, String key, String value) {
     if (value.startsWith("[") && value.endsWith("]")) {
       List<String> valueArray = value.substring(1, value.length - 1).split(",");
       for (int i = 0; i < valueArray.length; i++) {
@@ -126,15 +133,15 @@ class ExifModel extends ChangeNotifier {
   }
 
   void _setSinglesValue(
-      {required IfdValue ifdValue, required String value, index = 0}) {
+      {required img.IfdValue ifdValue, required String value, index = 0}) {
     Type type = ifdValue.runtimeType;
     switch (type) {
-      case const (IfdByteValue):
-      case const (IfdValueShort):
-      case const (IfdValueLong):
-      case const (IfdValueSByte):
-      case const (IfdValueSShort):
-      case const (IfdValueSLong):
+      case const (img.IfdByteValue):
+      case const (img.IfdValueShort):
+      case const (img.IfdValueLong):
+      case const (img.IfdValueSByte):
+      case const (img.IfdValueSShort):
+      case const (img.IfdValueSLong):
         {
           int? result = int.tryParse(value);
           if (result != null) {
@@ -142,8 +149,8 @@ class ExifModel extends ChangeNotifier {
           }
         }
         break;
-      case const (IfdValueSingle):
-      case const (IfdValueDouble):
+      case const (img.IfdValueSingle):
+      case const (img.IfdValueDouble):
         {
           double? result = double.tryParse(value);
           if (result != null) {
@@ -151,8 +158,8 @@ class ExifModel extends ChangeNotifier {
           }
         }
         break;
-      case const (IfdValueRational):
-      case const (IfdValueSRational):
+      case const (img.IfdValueRational):
+      case const (img.IfdValueSRational):
         {
           final array = value.split("/");
           if (array.length != 2) {
@@ -168,7 +175,7 @@ class ExifModel extends ChangeNotifier {
           }
         }
         break;
-      case const (IfdValueAscii):
+      case const (img.IfdValueAscii):
         ifdValue.setString(value);
         break;
       default:
@@ -180,24 +187,24 @@ class ExifModel extends ChangeNotifier {
     switch (subName) {
       case "gps":
         {
-          if (!exifGpsTags.containsKey(tag)) {
+          if (!img.exifGpsTags.containsKey(tag)) {
             return "<unknown>";
           }
-          return exifGpsTags[tag]!.name;
+          return img.exifGpsTags[tag]!.name;
         }
       case "interop":
         {
-          if (!exifInteropTags.containsKey(tag)) {
+          if (!img.exifInteropTags.containsKey(tag)) {
             return "<unknown>";
           }
-          return exifInteropTags[tag]!.name;
+          return img.exifInteropTags[tag]!.name;
         }
       default:
         {
-          if (!exifImageTags.containsKey(tag)) {
+          if (!img.exifImageTags.containsKey(tag)) {
             return "<unknown>";
           }
-          return exifImageTags[tag]!.name;
+          return img.exifImageTags[tag]!.name;
         }
     }
   }
@@ -207,5 +214,5 @@ class ExifItem {
   ExifItem(this.tag, this.info);
 
   String tag;
-  List<Map<String, IfdValue?>> info;
+  List<Map<String, img.IfdValue?>> info;
 }
