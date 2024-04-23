@@ -34,7 +34,7 @@ jobs:
         with:
           packages: clang cmake git ninja-build pkg-config libgtk-3-dev liblzma-dev libstdc++-12-dev
           version: 1.0
-        if: matrix.os == ' ubuntu-latest'
+        if: runner.os == 'Linux'
 
       - name: Install dependencies
         id: install
