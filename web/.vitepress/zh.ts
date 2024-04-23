@@ -18,6 +18,9 @@ export const zh = defineConfig({
         ],
       },
     ],
+    outline: {
+      label: "目录",
+    },
     footer: {
       message:
         '<a href="./terms">服务协议</a>&nbsp;&nbsp;&nbsp;&nbsp;<a href="./privacy">隐私政策</a>',

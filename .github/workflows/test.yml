@@ -29,6 +29,13 @@ jobs:
           flutter-version: ${{ env.FLUTTER_VERSION }}
           cache: true
 
+      - name: Install Tools
+        uses: awalsh128/cache-apt-pkgs-action@latest
+        with:
+          packages: clang cmake git ninja-build pkg-config libgtk-3-dev liblzma-dev libstdc++-12-dev
+          version: 1.0
+        if: runner.os == 'Linux'
+
       - name: Install dependencies
         id: install
         run: flutter pub get
@@ -41,8 +48,9 @@ jobs:
         run: dart analyze --fatal-infos
         if: always() && steps.install.outcome == 'success'
 
-      - name: Run tests
+      - name: Run unit tests
         run: flutter test --coverage --reporter github
+
       - name: Upload coverage reports to Codecov
         uses: codecov/codecov-action@v4.0.1
         with:

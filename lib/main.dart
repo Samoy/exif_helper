@@ -13,7 +13,7 @@ import 'package:exif_helper/models/system.dart';
 
 import 'extensions/platform_extension.dart';
 
-void main() async {
+main() async {
   WidgetsFlutterBinding.ensureInitialized();
   if (PlatformExtension.isDesktop) {
     await initDesktop();

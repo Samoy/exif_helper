@@ -33,3 +33,7 @@ const double normalButtonHeight = 40;
 const String keyDismissWarning = "dismissWarning";
 
 /*--------------------Storage   End--------------------*/
+
+/*--------------------List Start--------------------*/
+const List<String> allowedExtensions = ["jpg", "tif", "jpeg", "tiff"];
+/*--------------------List   End--------------------*/

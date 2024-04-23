@@ -46,3 +46,6 @@ app.*.map.json
 
 # Release
 /release
+
+# Test Coverage
+coverage/

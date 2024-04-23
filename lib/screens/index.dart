@@ -1,7 +1,8 @@
 import 'package:exif_helper/common/constant.dart';
-import 'package:exif_helper/models/exif.dart';
+import 'package:exif_helper/models/image_path.dart';
+import 'package:exif_helper/models/image_exif.dart';
 import 'package:exif_helper/models/search.dart';
-import 'package:exif_helper/screens/home.dart';
+import 'package:exif_helper/screens/home/home.dart';
 import 'package:exif_helper/screens/settings.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -64,16 +65,24 @@ class _IndexPageState extends State<IndexPage> with WindowListener {
   Widget build(BuildContext context) {
     return MultiProvider(
       providers: [
-        ChangeNotifierProvider(create: (context) => ExifModel()),
         ChangeNotifierProvider(create: (context) => SearchModel()),
+        ChangeNotifierProvider(create: (context) => ImagePathModel()),
       ],
-      child: OrientationBuilder(
-        builder: (BuildContext context, Orientation orientation) {
-          if (orientation == Orientation.landscape) {
-            return _buildLandscape();
-          }
-          return _buildPortrait();
+      child: ChangeNotifierProxyProvider<ImagePathModel, ImageExifModel>(
+        create: (context) => ImageExifModel(),
+        update: (context, imagePathModel, previous) {
+          final exifModel = ImageExifModel(path: imagePathModel.imagePath);
+          exifModel.fetchImageExifInfo();
+          return exifModel;
         },
+        child: OrientationBuilder(
+          builder: (BuildContext context, Orientation orientation) {
+            if (orientation == Orientation.landscape) {
+              return _buildLandscape();
+            }
+            return _buildPortrait();
+          },
+        ),
       ),
     );
   }
@@ -149,10 +158,12 @@ class _IndexPageState extends State<IndexPage> with WindowListener {
   }
 
   Widget _buildIcon(_ScaffoldDestination destination) {
-    bool selected = _selectedIndex == _destinations.indexOf(destination);
+    int index = _destinations.indexOf(destination);
+    bool selected = _selectedIndex == index;
     const double selectedScale = 1.2;
     const double unselectedScale = 1.0;
     return AnimatedSwitcher(
+      key: ValueKey<String>("navigation_$index"),
       duration: const Duration(milliseconds: 150),
       switchInCurve: Curves.easeIn,
       switchOutCurve: Curves.easeOut,
@@ -168,7 +179,7 @@ class _IndexPageState extends State<IndexPage> with WindowListener {
       },
       child: Icon(
         selected ? destination.selectedIcon : destination.icon,
-        key: ValueKey<int>(_selectedIndex),
+        key: ValueKey<String>("navigation_icon_$_selectedIndex"),
       ),
     );
   }

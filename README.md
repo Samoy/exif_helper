@@ -1,7 +1,7 @@
 # ExifHelper
-
+[![CI](https://github.com/Samoy/exif_helper/actions/workflows/ci.yml/badge.svg)](https://github.com/Samoy/exif_helper/actions/workflows/ci.yml)
+[![codecov](https://codecov.io/github/Samoy/exif_helper/graph/badge.svg?token=SCJGI01J89)](https://codecov.io/github/Samoy/exif_helper)  
 Read or write image exif without internet
-
 ## Features
 ### 💻 Cross Platform  
 Support Windows, Linux, Macos, Android and iOS
