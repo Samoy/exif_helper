@@ -87,7 +87,6 @@ class _HomeSaveButtonState extends State<HomeSaveButton> {
     }
   }
 
-
   void _saveFile(String fileName, image.Image imageData, String extension) {
     final appContext = AppLocalizations.of(context)!;
     FilePicker.platform.saveFile(
