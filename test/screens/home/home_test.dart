@@ -1,7 +1,7 @@
 import 'package:exif_helper/models/image_exif.dart';
 import 'package:exif_helper/models/image_path.dart';
 import 'package:exif_helper/models/search.dart';
-import 'package:exif_helper/screens/home.dart';
+import 'package:exif_helper/screens/home/home.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:provider/provider.dart';
@@ -53,12 +53,10 @@ void main() {
       BuildContext context = tester.element(find.byType(HomePage));
       Provider.of<ImagePathModel>(context, listen: false).imagePath = imagePath;
       await tester.pumpAndSettle();
-      await tester
-          .runAsync(() => exifModel.fetchImageExifInfo())
-          .then((value) async {
-        await tester.pumpAndSettle();
-        expect(find.byKey(const ValueKey("home_save_button")), findsOneWidget);
-      });
+      expect(find.byType(Image), findsOneWidget);
+      await tester.runAsync(() => exifModel.fetchImageExifInfo());
+      await tester.pumpAndSettle();
+      expect(find.byKey(const ValueKey("home_save_button")), findsOneWidget);
     });
   });
 }

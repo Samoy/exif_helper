@@ -1,8 +1,8 @@
 import 'package:exif_helper/models/search.dart';
-import 'package:exif_helper/widgets/home_app_bar.dart';
-import 'package:exif_helper/widgets/home_image_container.dart';
-import 'package:exif_helper/widgets/home_image_exif.dart';
-import 'package:exif_helper/widgets/home_save_button.dart';
+import 'package:exif_helper/screens/home/home_app_bar.dart';
+import 'package:exif_helper/screens/home/home_image_container.dart';
+import 'package:exif_helper/screens/home/home_image_exif.dart';
+import 'package:exif_helper/screens/home/home_save_button.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
@@ -14,7 +14,6 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
-
   @override
   void initState() {
     super.initState();
@@ -31,8 +30,8 @@ class _HomePageState extends State<HomePage> {
       children: [
         CustomScrollView(
           slivers: [
-            HomeAppBar(
-              key: const ValueKey("home_app_bar"),
+            const HomeAppBar(
+              key: ValueKey("home_app_bar"),
             ),
             const HomeImageContainer(
               key: ValueKey("home_select_image_container"),

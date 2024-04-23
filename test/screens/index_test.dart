@@ -1,7 +1,7 @@
 import 'dart:ui';
 
 import 'package:exif_helper/models/system.dart';
-import 'package:exif_helper/screens/home.dart';
+import 'package:exif_helper/screens/home/home.dart';
 import 'package:exif_helper/screens/index.dart';
 import 'package:exif_helper/screens/settings.dart';
 import 'package:exif_helper/theme/theme.dart';

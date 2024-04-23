@@ -4,8 +4,7 @@ import 'package:flutter_svg/svg.dart';
 import 'package:provider/provider.dart';
 import 'package:image/image.dart' as image;
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
-
-import '../common/constant.dart';
+import 'package:exif_helper/common/constant.dart';
 
 class HomeExifContainer extends StatefulWidget {
   const HomeExifContainer({super.key, this.query = ''});
@@ -17,7 +16,6 @@ class HomeExifContainer extends StatefulWidget {
 }
 
 class _HomeExifContainerState extends State<HomeExifContainer> {
-
   final double fileIconSize = 64.0;
 
   @override
@@ -39,8 +37,7 @@ class _HomeExifContainerState extends State<HomeExifContainer> {
           crossAxisAlignment: CrossAxisAlignment.center,
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Text(AppLocalizations.of(context)!
-                .supportImageFormatBelow),
+            Text(AppLocalizations.of(context)!.supportImageFormatBelow),
             const SizedBox(
               height: smallMargin,
             ),
@@ -49,8 +46,7 @@ class _HomeExifContainerState extends State<HomeExifContainer> {
               children: [
                 for (var extension in allowedExtensions)
                   Padding(
-                    padding: const EdgeInsets.all(
-                        normalPadding / 2),
+                    padding: const EdgeInsets.all(normalPadding / 2),
                     child: SvgPicture.asset(
                       "assets/images/$extension.svg",
                       width: fileIconSize,

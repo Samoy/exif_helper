@@ -1,16 +1,15 @@
+import 'package:exif_helper/common/constant.dart';
 import 'package:exif_helper/common/utils.dart';
+import 'package:exif_helper/extensions/platform_extension.dart';
 import 'package:exif_helper/models/image_exif.dart';
 import 'package:exif_helper/models/image_path.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import '../common/constant.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:path/path.dart' as path;
 import 'package:image/image.dart' as image;
 import 'dart:typed_data';
-
-import '../extensions/platform_extension.dart';
 
 class HomeSaveButton extends StatefulWidget {
   const HomeSaveButton({super.key});
@@ -79,14 +78,17 @@ class _HomeSaveButtonState extends State<HomeSaveButton> {
     String extension = path.extension(imagePath).substring(1);
     String fileName = AppLocalizations.of(context)!
         .fileCopy(path.basenameWithoutExtension(imagePath), extension);
+    image.Image imageData =
+        Provider.of<ImageExifModel>(context, listen: false).imageData!;
     if (PlatformExtension.isMobile) {
-      _saveFileToMobile(fileName, extension);
+      _saveFileToMobile(fileName, imageData, extension);
     } else {
-      _saveFile(fileName, extension);
+      _saveFile(fileName, imageData, extension);
     }
   }
 
-  void _saveFile(String fileName, String extension) {
+
+  void _saveFile(String fileName, image.Image imageData, String extension) {
     final appContext = AppLocalizations.of(context)!;
     FilePicker.platform.saveFile(
       dialogTitle: appContext.saveImage,
@@ -98,12 +100,10 @@ class _HomeSaveButtonState extends State<HomeSaveButton> {
         String lowerCaseExtension = extension.toLowerCase();
         Future<bool>? future;
         if (lowerCaseExtension == "jpg" || lowerCaseExtension == "jpeg") {
-          future = image.encodeJpgFile(path,
-              Provider.of<ImageExifModel>(context, listen: false).imageData!);
+          future = image.encodeJpgFile(path, imageData);
         } else if (lowerCaseExtension == "tif" ||
             lowerCaseExtension == "tiff") {
-          future = image.encodeTiffFile(path,
-              Provider.of<ImageExifModel>(context, listen: false).imageData!);
+          future = image.encodeTiffFile(path, imageData);
         }
         future?.then((success) {
           SnackBarUtils.showSnackBar(context,
@@ -113,16 +113,15 @@ class _HomeSaveButtonState extends State<HomeSaveButton> {
     });
   }
 
-  void _saveFileToMobile(String fileName, String extension) async {
+  void _saveFileToMobile(
+      String fileName, image.Image imageData, String extension) async {
     final appContext = AppLocalizations.of(context)!;
     String lowerCaseExtension = extension.toLowerCase();
     Uint8List? bytes;
     if (lowerCaseExtension == "jpg" || lowerCaseExtension == "jpeg") {
-      bytes = image.encodeJpg(
-          Provider.of<ImageExifModel>(context, listen: false).imageData!);
+      bytes = image.encodeJpg(imageData);
     } else if (lowerCaseExtension == "tif" || lowerCaseExtension == "tiff") {
-      bytes = image.encodeTiff(
-          Provider.of<ImageExifModel>(context, listen: false).imageData!);
+      bytes = image.encodeTiff(imageData);
     } else {
       SnackBarUtils.showSnackBar(context, appContext.invalidImageType);
     }
