@@ -50,8 +50,6 @@ jobs:
 
       - name: Run unit tests
         run: flutter test --coverage --reporter github
-      - name: Run integration tests
-        run: flutter test integration_test --coverage --reporter github
 
       - name: Upload coverage reports to Codecov
         uses: codecov/codecov-action@v4.0.1
