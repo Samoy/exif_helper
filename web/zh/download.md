@@ -90,7 +90,7 @@ function changePlatform(platform: String) {
  <h4>MacOS下载</h4>
 <div>
 <h6>二进制文件</h6>
-<a class="download-link">⬇️ DMG</a>
+<a class="download-link" target="_blank" download :href="withBase('/release/Exif小助手.dmg')">>⬇️ DMG</a>
 </div>
 <div>
 <div>

@@ -88,7 +88,7 @@ function changePlatform(platform: String) {
  <h4>MacOS Downloads</h4>
 <div>
 <h6>Binaries</h6>
-<a class="download-link">⬇️ DMG</a>
+<a class="download-link" target="_blank" download :href="withBase('/release/ExifHelper.dmg')">>⬇️ DMG</a>
 </div>
 <div>
 <div>
