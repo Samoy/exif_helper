@@ -42,7 +42,7 @@ function packaging() {
     --app-drop-link 610 210 \
     "$RELEASE_DIR/$1.dmg" \
     "$TMP_DIR/$1.app"
-    rm -rf $TMP_DIR/*
+    rm -rf $TMP_DIR
 }
 # Packaging English version
 packaging $APP_EN_NAME
