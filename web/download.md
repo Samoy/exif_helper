@@ -33,7 +33,7 @@ function getCurrentPlatform(): String {
   if (/Windows/i.test(userAgent)) {
     return 'Windows';
   } else if (/Macintosh/i.test(userAgent) || /MacIntel/i.test(userAgent)) {
-    return 'macOS';
+    return 'MacOS';
   } else if (/Linux/i.test(userAgent)) {
     return 'Linux';
   }
@@ -51,6 +51,11 @@ function getCurrentPlatform(): String {
 function changePlatform(platform: String) {
   currentPlatform.value = platform;
   sessionStorage.setItem('platform', platform);
+}
+
+function wip(e){
+  e.preventDefault();
+  alert('Coming Soon!');
 }
 
 </script>
@@ -78,7 +83,7 @@ function changePlatform(platform: String) {
 <div>
 <div>
 <h6>Microsoft Store</h6>
-<a class="download-link">
+<a class="download-link" @click="wip">
 <img src="/microsoft-store.svg"/>
 </a>
 </div>
@@ -88,12 +93,12 @@ function changePlatform(platform: String) {
  <h4>MacOS Downloads</h4>
 <div>
 <h6>Binaries</h6>
-<a class="download-link">⬇️ DMG</a>
+<a class="download-link" target="_blank" download :href="withBase('/release/ExifHelper.dmg')">⬇️ DMG</a>
 </div>
 <div>
 <div>
 <h6>Apple Store</h6>
-<a class="download-link">
+<a class="download-link" @click="wip">
 <img src="/apple-store.svg"/>
 </a>
 </div>
@@ -116,7 +121,7 @@ function changePlatform(platform: String) {
 </div>
 <div>
 <h6>Google Play</h6>
-<a class="download-link">
+<a class="download-link" @click="wip">
 <img src="/google-play.svg"/>
 </a>
 </div>
@@ -127,7 +132,7 @@ function changePlatform(platform: String) {
  <h4>iOS Downloads</h4>
 <div>
 <h6>Apple Store</h6>
-<a class="download-link">
+<a class="download-link" @click="wip">
 <img src="/apple-store.svg"/>
 </a>
 </div>

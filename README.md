@@ -1,5 +1,6 @@
 # ExifHelper
 [![CI](https://github.com/Samoy/exif_helper/actions/workflows/ci.yml/badge.svg)](https://github.com/Samoy/exif_helper/actions/workflows/ci.yml)
+[![Test](https://github.com/Samoy/exif_helper/actions/workflows/test.yml/badge.svg)](https://github.com/Samoy/exif_helper/actions/workflows/test.yml)
 [![codecov](https://codecov.io/github/Samoy/exif_helper/graph/badge.svg?token=SCJGI01J89)](https://codecov.io/github/Samoy/exif_helper)  
 Read or write image exif without internet
 ## Features
@@ -10,8 +11,8 @@ Use it without internet, which effectively protects your privacy.
 ### ✨ Open Source  
 The source code is open and free, you can modify it according to your needs.
 
-## Screenshots
-<img alt="Android screenshot" src="https://www.samoy.site/exif_helper/screenshot_android.png"  height="400">
+## Screenshot
+![Screenshot](https://www.samoy.site/exif_helper/screenshot.png)
 
 ## Building
 
